@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Performance Analyzer</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <h2>Student Analyzer</h2>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="#">Students</a>
+            <a href="#">Analytics</a>
+            <a href="#">Prediction</a>
+        </div>
+    </nav>
+
+    <main>
+
+        <section class="hero">
+
+            <div>
+                <h1>Student Performance Analyzer</h1>
+
+                <p>
+                    Manage student performance, analyze academic data,
+                    and predict future performance using Machine Learning.
+                </p>
+
+                <button>Add Student</button>
+            </div>
+
+        </section>
+
+        <section class="stats">
+
+            <div class="card">
+                <h3>Total Students</h3>
+                <p>0</p>
+            </div>
+
+            <div class="card">
+                <h3>Average Score</h3>
+                <p>0%</p>
+            </div>
+
+            <div class="card">
+                <h3>Top Performer</h3>
+                <p>---</p>
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
