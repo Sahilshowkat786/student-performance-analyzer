@@ -519,3 +519,92 @@ select {
         padding-bottom: 20px;
     }
 }
+
+/* Add Student Form */
+
+.form-section {
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.form-container {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.form-container h1 {
+    margin-bottom: 8px;
+}
+
+.form-description {
+    margin-bottom: 30px;
+    color: #666;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #333;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background: #444;
+}
+
+
+@media (max-width: 700px) {
+
+    .form-section {
+        padding: 20px;
+    }
+
+    .form-container {
+        padding: 25px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+}

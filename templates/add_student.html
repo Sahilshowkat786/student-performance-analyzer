@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Student - Student Performance Analyzer</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <nav>
+        <h2>Student Analyzer</h2>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="/add-student">Add Student</a>
+            <a href="#">Students</a>
+            <a href="#">Analytics</a>
+            <a href="#">Prediction</a>
+        </div>
+    </nav>
+
+
+    <main>
+
+        <section class="form-section">
+
+            <div class="form-container">
+
+                <h1>Add Student</h1>
+
+                <p class="form-description">
+                    Enter the student's academic information below.
+                </p>
+
+
+                <form>
+
+                    <div class="form-group">
+
+                        <label for="name">Student Name</label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Enter student name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="roll">Roll Number</label>
+
+                        <input
+                            type="text"
+                            id="roll"
+                            name="roll"
+                            placeholder="Enter roll number"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="email">Email</label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="age">Age</label>
+
+                            <input
+                                type="number"
+                                id="age"
+                                name="age"
+                                min="10"
+                                max="100"
+                                placeholder="Age"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="attendance">Attendance (%)</label>
+
+                            <input
+                                type="number"
+                                id="attendance"
+                                name="attendance"
+                                min="0"
+                                max="100"
+                                placeholder="Attendance"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="study_hours">Study Hours / Day</label>
+
+                        <input
+                            type="number"
+                            id="study_hours"
+                            name="study_hours"
+                            min="0"
+                            max="24"
+                            step="0.5"
+                            placeholder="Example: 3.5"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="assignment">Assignment Score (%)</label>
+
+                            <input
+                                type="number"
+                                id="assignment"
+                                name="assignment"
+                                min="0"
+                                max="100"
+                                placeholder="Score"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="previous_marks">Previous Marks (%)</label>
+
+                            <input
+                                type="number"
+                                id="previous_marks"
+                                name="previous_marks"
+                                min="0"
+                                max="100"
+                                placeholder="Previous marks"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <button type="submit" class="submit-btn">
+                        Add Student
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
