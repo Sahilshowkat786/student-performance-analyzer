@@ -38,7 +38,11 @@
                 </p>
 
 
-                <form>
+                <!-- POST FORM -->
+                <form method="POST">
+
+
+                    <!-- STUDENT INFORMATION -->
 
                     <div class="form-group">
 
@@ -123,6 +127,8 @@
                     </div>
 
 
+                    <!-- STUDY INFORMATION -->
+
                     <div class="form-group">
 
                         <label for="study_hours">Study Hours / Day</label>
@@ -179,9 +185,92 @@
                     </div>
 
 
+                    <!-- SUBJECT MARKS -->
+
+                    <h2>Subject Marks</h2>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="python">Python</label>
+
+                            <input
+                                type="number"
+                                id="python"
+                                name="python"
+                                min="0"
+                                max="100"
+                                placeholder="Python marks"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="dsa">DSA</label>
+
+                            <input
+                                type="number"
+                                id="dsa"
+                                name="dsa"
+                                min="0"
+                                max="100"
+                                placeholder="DSA marks"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="dbms">DBMS</label>
+
+                            <input
+                                type="number"
+                                id="dbms"
+                                name="dbms"
+                                min="0"
+                                max="100"
+                                placeholder="DBMS marks"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="web">Web Development</label>
+
+                            <input
+                                type="number"
+                                id="web"
+                                name="web"
+                                min="0"
+                                max="100"
+                                placeholder="Web Development marks"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SUBMIT -->
+
                     <button type="submit" class="submit-btn">
-                        Add Student
+                        Analyze Performance
                     </button>
+
 
                 </form>
 

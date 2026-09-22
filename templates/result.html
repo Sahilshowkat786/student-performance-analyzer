@@ -1,0 +1,187 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Performance Result - Student Analyzer</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+
+    <nav>
+
+        <h2>Student Analyzer</h2>
+
+        <div>
+            <a href="/">Home</a>
+            <a href="/add-student">Add Student</a>
+            <a href="#">Students</a>
+            <a href="#">Analytics</a>
+            <a href="#">Prediction</a>
+        </div>
+
+    </nav>
+
+
+    <main>
+
+        <section class="result-section">
+
+            <div class="result-container">
+
+                <!-- Heading -->
+
+                <h1>Performance Analysis</h1>
+
+                <p class="result-description">
+                    Performance report for <strong>{{ name }}</strong>
+                </p>
+
+
+                <!-- Summary Cards -->
+
+                <div class="result-cards">
+
+                    <div class="result-card">
+
+                        <h3>Total Marks</h3>
+
+                        <p>
+                            {{ total }} / 400
+                        </p>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <h3>Average</h3>
+
+                        <p>
+                            {{ "%.2f"|format(average) }}
+                        </p>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <h3>Percentage</h3>
+
+                        <p>
+                            {{ "%.2f"|format(percentage) }}%
+                        </p>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <h3>Grade</h3>
+
+                        <p>
+                            {{ grade }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Result -->
+
+                <div class="performance-result">
+
+                    <h2>Result</h2>
+
+                    <p>
+                        {{ result }}
+                    </p>
+
+                </div>
+
+
+                <!-- Subject Performance -->
+
+                <div class="subject-section">
+
+                    <h2>Subject Performance</h2>
+
+                    {% for subject, mark in marks.items() %}
+
+                    <div class="subject-row">
+
+                        <div class="subject-name">
+                            {{ subject }}
+                        </div>
+
+                        <div class="subject-mark">
+                            {{ mark }}
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Best and Weakest Subject -->
+
+                <div class="subject-analysis">
+
+                    <div>
+
+                        <h3>Highest Performing Subject</h3>
+
+                        <p>
+                            {{ highest_subject }}
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <h3>Lowest Performing Subject</h3>
+
+                        <p>
+                            {{ lowest_subject }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Actions -->
+
+                <div class="result-actions">
+
+                    <a href="/add-student" class="submit-btn">
+                        Add Another Student
+                    </a>
+
+                    <a href="/" class="secondary-btn">
+                        Back to Home
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>
+```

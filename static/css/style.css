@@ -608,3 +608,269 @@ select {
     }
 
 }
+
+/* =========================
+   PERFORMANCE RESULT PAGE
+========================= */
+
+.result-section {
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.result-container {
+    width: 100%;
+    max-width: 1000px;
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.result-container h1 {
+    margin-bottom: 8px;
+}
+
+.result-description {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+
+/* =========================
+   RESULT CARDS
+========================= */
+
+.result-cards {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 25px;
+}
+
+.result-card {
+    padding: 22px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+.result-card h3 {
+    color: #6b7280;
+
+    font-size: 13px;
+
+    margin-bottom: 10px;
+}
+
+.result-card p {
+    font-size: 26px;
+
+    font-weight: 700;
+
+    color: #111827;
+}
+
+
+/* =========================
+   PASS / FAIL RESULT
+========================= */
+
+.performance-result {
+    padding: 22px;
+
+    margin-bottom: 25px;
+
+    background: #f0fdf4;
+
+    border: 1px solid #bbf7d0;
+
+    border-radius: 10px;
+}
+
+.performance-result h2 {
+    margin-bottom: 8px;
+}
+
+.performance-result p {
+    font-size: 20px;
+
+    font-weight: 700;
+}
+
+
+/* =========================
+   SUBJECT PERFORMANCE
+========================= */
+
+.subject-section {
+    margin-bottom: 25px;
+}
+
+.subject-section h2 {
+    margin-bottom: 15px;
+}
+
+.subject-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 15px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.subject-name {
+    font-weight: 600;
+}
+
+.subject-mark {
+    font-weight: 700;
+}
+
+
+/* =========================
+   SUBJECT ANALYSIS
+========================= */
+
+.subject-analysis {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.subject-analysis > div {
+    padding: 20px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+}
+
+.subject-analysis h3 {
+    color: #6b7280;
+
+    font-size: 14px;
+
+    margin-bottom: 10px;
+}
+
+.subject-analysis p {
+    font-size: 19px;
+
+    font-weight: 700;
+}
+
+
+/* =========================
+   RESULT ACTIONS
+========================= */
+
+.result-actions {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 25px;
+}
+
+.result-actions .submit-btn {
+    width: auto;
+
+    text-decoration: none;
+
+    text-align: center;
+}
+
+.secondary-btn {
+    display: inline-block;
+
+    padding: 14px 20px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    color: #374151;
+
+    background: white;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    transition: 0.2s;
+}
+
+.secondary-btn:hover {
+    background: #f3f4f6;
+}
+
+
+/* =========================
+   RESULT RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+    .result-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .result-section {
+        padding: 20px;
+    }
+
+    .result-container {
+        padding: 25px;
+    }
+
+    .result-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .subject-analysis {
+        grid-template-columns: 1fr;
+    }
+
+    .result-actions {
+        flex-direction: column;
+    }
+
+    .result-actions .submit-btn {
+        width: 100%;
+    }
+
+    .secondary-btn {
+        text-align: center;
+    }
+
+}
+
