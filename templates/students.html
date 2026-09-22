@@ -1,210 +1,223 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Students</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
 
-<body>
-
+  <body>
     <nav class="topbar">
+      <h2>Student Performance Analyzer</h2>
 
-        <h2>Student Performance Analyzer</h2>
+      <div>
+        <a href="{{ url_for('home') }}"> Dashboard </a>
 
-        <div>
-
-            <a href="{{ url_for('home') }}">
-                Dashboard
-            </a>
-
-            <a href="{{ url_for('add_student') }}">
-                Add Student
-            </a>
-
-        </div>
-
+        <a href="{{ url_for('add_student') }}"> Add Student </a>
+      </div>
     </nav>
 
-
     <section class="result-section">
-
-        <div class="result-container">
-
-            <h1>Students</h1>
-
-            <p class="result-description">
-                All students stored in the database.
-            </p>
-
-
-            {% if students %}
-
-
-            <div style="overflow-x: auto;">
-
-                <table style="width: 100%; border-collapse: collapse;">
-
-                    <thead>
-
-                        <tr>
-
-                            <th style="padding: 12px; text-align: left;">
-                                ID
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Name
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Roll
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Age
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Attendance
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Study Hours
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Total
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Percentage
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Grade
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Result
-                            </th>
-
-                            <th style="padding: 12px; text-align: left;">
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody>
-
-                        {% for student in students %}
-
-                        <tr>
-
-                            <td style="padding: 12px;">
-                                {{ student.id }}
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ student.name }}
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ student.roll }}
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ student.age }}
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ "%.1f"|format(student.attendance) }}%
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ "%.1f"|format(student.study_hours) }}
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ "%.1f"|format(student.total) }}
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ "%.2f"|format(student.percentage) }}%
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ student.grade }}
-                            </td>
-
-                            <td style="padding: 12px;">
-                                {{ student.result }}
-                            </td>
-
-                            <td style="padding: 12px;">
-
-                                <a href="{{ url_for('student_details', student_id=student.id) }}"
-                                   class="secondary-btn">
-
-                                    View
-
-                                </a>
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-
-            {% else %}
-
-
-            <p>
-                No students found.
-            </p>
-
-
-            {% endif %}
-
-
-            <div class="result-actions">
-
-                <a href="{{ url_for('add_student') }}"
-                   class="submit-btn">
-
-                    Add Student
-
-                </a>
-
-
-                <a href="{{ url_for('home') }}"
-                   class="secondary-btn">
-
-                    Dashboard
-
-                </a>
-
-            </div>
-
+      <div class="result-container">
+        <h1>Students</h1>
+
+        <p class="result-description">All students stored in the database.</p>
+
+        <!-- Search -->
+        <form
+          method="GET"
+          action="{{ url_for('students') }}"
+          style="margin-bottom: 25px"
+        >
+          <input
+            type="text"
+            name="search"
+            placeholder="Search by name or roll number..."
+            value="{{ search }}"
+            style="padding: 12px; width: 60%"
+          />
+
+          <button type="submit" class="submit-btn">Search</button>
+
+          <a href="{{ url_for('students') }}" class="secondary-btn"> Clear </a>
+        </form>
+
+        <!-- Sorting -->
+        <form
+          method="GET"
+          action="{{ url_for('students') }}"
+          style="margin-bottom: 25px"
+        >
+          <input type="hidden" name="search" value="{{ search }}" />
+
+          <label for="sort"><strong>Sort by:</strong></label>
+
+          <select
+            name="sort"
+            id="sort"
+            onchange="this.form.submit()"
+          >
+            <option
+              value="latest"
+              {% if sort == "latest" %}selected{% endif %}
+            >
+              Latest
+            </option>
+
+            <option
+              value="highest"
+              {% if sort == "highest" %}selected{% endif %}
+            >
+              Highest Percentage
+            </option>
+
+            <option
+              value="lowest"
+              {% if sort == "lowest" %}selected{% endif %}
+            >
+              Lowest Percentage
+            </option>
+
+            <option
+              value="name_asc"
+              {% if sort == "name_asc" %}selected{% endif %}
+            >
+              Name A-Z
+            </option>
+
+            <option
+              value="name_desc"
+              {% if sort == "name_desc" %}selected{% endif %}
+            >
+              Name Z-A
+            </option>
+          </select>
+        </form>
+
+        {% if students %}
+
+        <div style="overflow-x: auto">
+          <table style="width: 100%; border-collapse: collapse">
+            <thead>
+              <tr>
+                <th style="padding: 12px; text-align: left">ID</th>
+
+                <th style="padding: 12px; text-align: left">Name</th>
+
+                <th style="padding: 12px; text-align: left">Roll</th>
+
+                <th style="padding: 12px; text-align: left">Age</th>
+
+                <th style="padding: 12px; text-align: left">Attendance</th>
+
+                <th style="padding: 12px; text-align: left">Study Hours</th>
+
+                <th style="padding: 12px; text-align: left">Total</th>
+
+                <th style="padding: 12px; text-align: left">Percentage</th>
+
+                <th style="padding: 12px; text-align: left">Grade</th>
+
+                <th style="padding: 12px; text-align: left">Result</th>
+
+                <th style="padding: 12px; text-align: left">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for student in students %}
+
+              <tr>
+                <td style="padding: 12px">{{ student.id }}</td>
+
+                <td style="padding: 12px">{{ student.name }}</td>
+
+                <td style="padding: 12px">{{ student.roll }}</td>
+
+                <td style="padding: 12px">{{ student.age }}</td>
+
+                <td style="padding: 12px">
+                  {{ "%.1f"|format(student.attendance) }}%
+                </td>
+
+                <td style="padding: 12px">
+                  {{ "%.1f"|format(student.study_hours) }}
+                </td>
+
+                <td style="padding: 12px">
+                  {{ "%.1f"|format(student.total) }}
+                </td>
+
+                <td style="padding: 12px">
+                  {{ "%.2f"|format(student.percentage) }}%
+                </td>
+
+                <td style="padding: 12px">{{ student.grade }}</td>
+
+                <td style="padding: 12px">{{ student.result }}</td>
+
+                <td style="padding: 12px">
+
+                  <!-- View Button -->
+                  <a
+                    href="{{ url_for('student_details', student_id=student.id) }}"
+                    class="secondary-btn"
+                  >
+                    View
+                  </a>
+
+                  <!-- Edit Button -->
+                  <a
+                    href="{{ url_for('edit_student', student_id=student.id) }}"
+                    class="submit-btn"
+                  >
+                    Edit
+                  </a>
+
+                  <!-- Delete Button -->
+                  <form
+                    action="{{ url_for('delete_student', student_id=student.id) }}"
+                    method="POST"
+                    style="display: inline"
+                    onsubmit="
+                      return confirm(
+                        'Are you sure you want to delete this student?',
+                      );
+                    "
+                  >
+                    <button type="submit" class="delete-btn">Delete</button>
+                  </form>
+
+                </td>
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
         </div>
 
+        {% else %}
+
+        <p>No students found.</p>
+
+        {% endif %}
+
+        <div class="result-actions">
+          <a href="{{ url_for('add_student') }}" class="submit-btn">
+            Add Student
+          </a>
+
+          <a href="{{ url_for('home') }}" class="secondary-btn">
+            Dashboard
+          </a>
+        </div>
+      </div>
     </section>
-
-</body>
-
+  </body>
 </html>
