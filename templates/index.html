@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +8,8 @@
 
     <title>Student Performance Analyzer</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
@@ -16,27 +18,30 @@
     <aside class="sidebar">
 
         <div class="logo">
+
             <div class="logo-icon">📊</div>
 
             <div>
                 <h2>Student</h2>
                 <span>Analyzer</span>
             </div>
+
         </div>
+
 
         <nav class="sidebar-nav">
 
-            <a href="/" class="nav-item active">
+            <a href="{{ url_for('home') }}" class="nav-item active">
                 <span>🏠</span>
                 Dashboard
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="{{ url_for('students') }}" class="nav-item">
                 <span>👨‍🎓</span>
                 Students
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="{{ url_for('add_student') }}" class="nav-item">
                 <span>➕</span>
                 Add Student
             </a>
@@ -53,6 +58,7 @@
 
         </nav>
 
+
         <div class="sidebar-bottom">
 
             <a href="#" class="nav-item">
@@ -68,21 +74,37 @@
     <!-- Main Content -->
     <main class="main-content">
 
+
         <!-- Top Bar -->
         <header class="topbar">
 
             <div>
+
                 <h1>Dashboard</h1>
-                <p>Welcome back, Sahil 👋</p>
+
+                <p>
+                    Welcome back, Sahil 👋
+                </p>
+
             </div>
 
+
             <div class="profile">
-                <div class="profile-avatar">SS</div>
+
+                <div class="profile-avatar">
+                    SS
+                </div>
 
                 <div>
+
                     <strong>Sahil Showkat</strong>
-                    <small>Administrator</small>
+
+                    <small>
+                        Administrator
+                    </small>
+
                 </div>
+
             </div>
 
         </header>
@@ -91,6 +113,8 @@
         <!-- Statistics -->
         <section class="stats-grid">
 
+
+            <!-- Total Students -->
             <div class="stat-card">
 
                 <div class="stat-icon blue">
@@ -98,13 +122,19 @@
                 </div>
 
                 <div>
+
                     <p>Total Students</p>
-                    <h2>0</h2>
+
+                    <h2>
+                        {{ students|length }}
+                    </h2>
+
                 </div>
 
             </div>
 
 
+            <!-- Average Score -->
             <div class="stat-card">
 
                 <div class="stat-icon green">
@@ -112,13 +142,29 @@
                 </div>
 
                 <div>
+
                     <p>Average Score</p>
+
+                    {% if students %}
+
+                    <h2>
+                        {{ "%.2f"|format(
+                            students|sum(attribute="percentage") / students|length
+                        ) }}%
+                    </h2>
+
+                    {% else %}
+
                     <h2>0%</h2>
+
+                    {% endif %}
+
                 </div>
 
             </div>
 
 
+            <!-- Top Performer -->
             <div class="stat-card">
 
                 <div class="stat-icon orange">
@@ -126,13 +172,29 @@
                 </div>
 
                 <div>
+
                     <p>Top Performer</p>
+
+                    {% if students %}
+
+                    {% set top_student = students|max(attribute="percentage") %}
+
+                    <h2>
+                        {{ top_student.name }}
+                    </h2>
+
+                    {% else %}
+
                     <h2>---</h2>
+
+                    {% endif %}
+
                 </div>
 
             </div>
 
 
+            <!-- Subjects -->
             <div class="stat-card">
 
                 <div class="stat-icon purple">
@@ -140,8 +202,11 @@
                 </div>
 
                 <div>
+
                     <p>Subjects</p>
-                    <h2>0</h2>
+
+                    <h2>4</h2>
+
                 </div>
 
             </div>
@@ -152,23 +217,33 @@
         <!-- Dashboard Content -->
         <section class="dashboard-grid">
 
+
             <!-- Performance Overview -->
             <div class="panel performance-panel">
 
                 <div class="panel-header">
 
                     <div>
+
                         <h2>Performance Overview</h2>
-                        <p>Student performance will appear here</p>
+
+                        <p>
+                            Student performance summary
+                        </p>
+
                     </div>
 
+
                     <select>
+
                         <option>This Year</option>
                         <option>This Month</option>
                         <option>This Week</option>
+
                     </select>
 
                 </div>
+
 
                 <div class="empty-chart">
 
@@ -176,11 +251,30 @@
                         📈
                     </div>
 
-                    <h3>No Data Available</h3>
+
+                    {% if students %}
+
+                    <h3>
+                        {{ students|length }}
+                        Student{% if students|length != 1 %}s{% endif %}
+                        Available
+                    </h3>
+
+                    <p>
+                        Performance data is available.
+                    </p>
+
+                    {% else %}
+
+                    <h3>
+                        No Data Available
+                    </h3>
 
                     <p>
                         Add students to start analyzing performance.
                     </p>
+
+                    {% endif %}
 
                 </div>
 
@@ -193,8 +287,13 @@
                 <div class="panel-header">
 
                     <div>
+
                         <h2>Quick Actions</h2>
-                        <p>Manage your students</p>
+
+                        <p>
+                            Manage your students
+                        </p>
+
                     </div>
 
                 </div>
@@ -202,33 +301,64 @@
 
                 <div class="quick-actions">
 
-                    <a href="#" class="action-card">
+
+                    <a href="{{ url_for('add_student') }}"
+                       class="action-card">
+
                         <span>➕</span>
 
                         <div>
-                            <strong>Add Student</strong>
-                            <small>Add a new student</small>
+
+                            <strong>
+                                Add Student
+                            </strong>
+
+                            <small>
+                                Add a new student
+                            </small>
+
                         </div>
+
                     </a>
 
 
-                    <a href="#" class="action-card">
+                    <a href="{{ url_for('students') }}"
+                       class="action-card">
+
                         <span>👨‍🎓</span>
 
                         <div>
-                            <strong>View Students</strong>
-                            <small>Manage student records</small>
+
+                            <strong>
+                                View Students
+                            </strong>
+
+                            <small>
+                                Manage student records
+                            </small>
+
                         </div>
+
                     </a>
 
 
-                    <a href="#" class="action-card">
+                    <a href="#"
+                       class="action-card">
+
                         <span>🤖</span>
 
                         <div>
-                            <strong>Make Prediction</strong>
-                            <small>Predict performance</small>
+
+                            <strong>
+                                Make Prediction
+                            </strong>
+
+                            <small>
+                                Predict performance
+                            </small>
+
                         </div>
+
                     </a>
 
                 </div>
@@ -244,35 +374,126 @@
             <div class="panel-header">
 
                 <div>
+
                     <h2>Recent Students</h2>
-                    <p>Recently added students</p>
+
+                    <p>
+                        Recently added students
+                    </p>
+
                 </div>
 
-                <a href="#">View All →</a>
+
+                <a href="{{ url_for('students') }}">
+                    View All →
+                </a>
 
             </div>
 
+
+            {% if students %}
+
+            <div style="overflow-x: auto;">
+
+                <table style="width: 100%; border-collapse: collapse;">
+
+                    <thead>
+
+                        <tr>
+
+                            <th style="padding: 12px; text-align: left;">
+                                Name
+                            </th>
+
+                            <th style="padding: 12px; text-align: left;">
+                                Roll
+                            </th>
+
+                            <th style="padding: 12px; text-align: left;">
+                                Percentage
+                            </th>
+
+                            <th style="padding: 12px; text-align: left;">
+                                Grade
+                            </th>
+
+                            <th style="padding: 12px; text-align: left;">
+                                Result
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for student in students[:5] %}
+
+                        <tr>
+
+                            <td style="padding: 12px;">
+                                {{ student.name }}
+                            </td>
+
+                            <td style="padding: 12px;">
+                                {{ student.roll }}
+                            </td>
+
+                            <td style="padding: 12px;">
+                                {{ "%.2f"|format(student.percentage) }}%
+                            </td>
+
+                            <td style="padding: 12px;">
+                                {{ student.grade }}
+                            </td>
+
+                            <td style="padding: 12px;">
+                                {{ student.result }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            {% else %}
 
             <div class="empty-state">
 
                 <div>👨‍🎓</div>
 
-                <h3>No Students Yet</h3>
+                <h3>
+                    No Students Yet
+                </h3>
 
                 <p>
                     Add your first student to get started.
                 </p>
 
-                <a href="#" class="primary-btn">
+                <a href="{{ url_for('add_student') }}"
+                   class="primary-btn">
+
                     + Add Student
+
                 </a>
 
             </div>
 
+            {% endif %}
+
         </section>
+
 
     </main>
 
 </body>
 
 </html>
+```

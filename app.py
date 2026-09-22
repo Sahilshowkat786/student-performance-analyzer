@@ -64,6 +64,43 @@ def home():
     return render_template("index.html", students=students)
 
 
+# Students page
+@app.route("/students")
+def students():
+
+    connection = get_db_connection()
+
+    students = connection.execute(
+        "SELECT * FROM students ORDER BY id DESC"
+    ).fetchall()
+
+    connection.close()
+
+    return render_template("students.html", students=students)
+
+
+# Student details
+@app.route("/student/<int:student_id>")
+def student_details(student_id):
+
+    connection = get_db_connection()
+
+    student = connection.execute(
+        "SELECT * FROM students WHERE id = ?",
+        (student_id,)
+    ).fetchone()
+
+    connection.close()
+
+    if student is None:
+        return "Student not found", 404
+
+    return render_template(
+        "student_details.html",
+        student=student
+    )
+
+
 # Add student
 @app.route("/add-student", methods=["GET", "POST"])
 def add_student():

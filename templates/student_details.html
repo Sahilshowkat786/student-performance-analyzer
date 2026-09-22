@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ student.name }} - Student Details</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+
+<body>
+
+    <nav class="topbar">
+
+        <h2>Student Performance Analyzer</h2>
+
+        <div>
+
+            <a href="{{ url_for('home') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('students') }}">
+                Students
+            </a>
+
+            <a href="{{ url_for('add_student') }}">
+                Add Student
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <section class="result-section">
+
+        <div class="result-container">
+
+            <h1>{{ student.name }}</h1>
+
+            <p class="result-description">
+                Complete student performance details
+            </p>
+
+
+            <!-- Personal Information -->
+
+            <div class="subject-section">
+
+                <h2>Personal Information</h2>
+
+                <div class="subject-row">
+                    <span class="subject-name">Student ID</span>
+                    <span class="subject-mark">
+                        {{ student.id }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">Name</span>
+                    <span class="subject-mark">
+                        {{ student.name }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">Roll Number</span>
+                    <span class="subject-mark">
+                        {{ student.roll }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">Email</span>
+                    <span class="subject-mark">
+                        {{ student.email }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">Age</span>
+                    <span class="subject-mark">
+                        {{ student.age }}
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- Academic Information -->
+
+            <div class="subject-section">
+
+                <h2>Academic Information</h2>
+
+                <div class="subject-row">
+                    <span class="subject-name">Attendance</span>
+                    <span class="subject-mark">
+                        {{ "%.1f"|format(student.attendance) }}%
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">Study Hours</span>
+                    <span class="subject-mark">
+                        {{ "%.1f"|format(student.study_hours) }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">Assignment</span>
+                    <span class="subject-mark">
+                        {{ "%.1f"|format(student.assignment) }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">Previous Marks</span>
+                    <span class="subject-mark">
+                        {{ "%.1f"|format(student.previous_marks) }}
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- Subject Marks -->
+
+            <div class="subject-section">
+
+                <h2>Subject Marks</h2>
+
+                <div class="subject-row">
+                    <span class="subject-name">Python</span>
+                    <span class="subject-mark">
+                        {{ "%.1f"|format(student.python) }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">DSA</span>
+                    <span class="subject-mark">
+                        {{ "%.1f"|format(student.dsa) }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">DBMS</span>
+                    <span class="subject-mark">
+                        {{ "%.1f"|format(student.dbms) }}
+                    </span>
+                </div>
+
+                <div class="subject-row">
+                    <span class="subject-name">Web Development</span>
+                    <span class="subject-mark">
+                        {{ "%.1f"|format(student.web) }}
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- Performance -->
+
+            <div class="result-cards">
+
+                <div class="result-card">
+
+                    <h3>Total</h3>
+
+                    <p>
+                        {{ "%.1f"|format(student.total) }}/400
+                    </p>
+
+                </div>
+
+
+                <div class="result-card">
+
+                    <h3>Average</h3>
+
+                    <p>
+                        {{ "%.2f"|format(student.average) }}
+                    </p>
+
+                </div>
+
+
+                <div class="result-card">
+
+                    <h3>Percentage</h3>
+
+                    <p>
+                        {{ "%.2f"|format(student.percentage) }}%
+                    </p>
+
+                </div>
+
+
+                <div class="result-card">
+
+                    <h3>Grade</h3>
+
+                    <p>
+                        {{ student.grade }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Result -->
+
+            <div class="performance-result">
+
+                <h2>Final Result</h2>
+
+                <p>
+                    {{ student.result }}
+                </p>
+
+            </div>
+
+
+            <!-- Actions -->
+
+            <div class="result-actions">
+
+                <a href="{{ url_for('students') }}"
+                   class="secondary-btn">
+
+                    Back to Students
+
+                </a>
+
+
+                <a href="{{ url_for('add_student') }}"
+                   class="submit-btn">
+
+                    Add Student
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</body>
+
+</html>
