@@ -12,49 +12,261 @@
 
 <body>
 
-    <nav>
-        <h2>Student Analyzer</h2>
+    <!-- Sidebar -->
+    <aside class="sidebar">
 
-        <div>
-            <a href="/">Home</a>
-            <a href="#">Students</a>
-            <a href="#">Analytics</a>
-            <a href="#">Prediction</a>
-        </div>
-    </nav>
-
-    <main>
-
-        <section class="hero">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
 
             <div>
-                <h1>Student Performance Analyzer</h1>
+                <h2>Student</h2>
+                <span>Analyzer</span>
+            </div>
+        </div>
 
-                <p>
-                    Manage student performance, analyze academic data,
-                    and predict future performance using Machine Learning.
-                </p>
+        <nav class="sidebar-nav">
 
-                <button>Add Student</button>
+            <a href="/" class="nav-item active">
+                <span>🏠</span>
+                Dashboard
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>👨‍🎓</span>
+                Students
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>➕</span>
+                Add Student
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>📈</span>
+                Analytics
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>🤖</span>
+                ML Prediction
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+
+            <a href="#" class="nav-item">
+                <span>⚙️</span>
+                Settings
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Top Bar -->
+        <header class="topbar">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back, Sahil 👋</p>
+            </div>
+
+            <div class="profile">
+                <div class="profile-avatar">SS</div>
+
+                <div>
+                    <strong>Sahil Showkat</strong>
+                    <small>Administrator</small>
+                </div>
+            </div>
+
+        </header>
+
+
+        <!-- Statistics -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-icon blue">
+                    👨‍🎓
+                </div>
+
+                <div>
+                    <p>Total Students</p>
+                    <h2>0</h2>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon green">
+                    📊
+                </div>
+
+                <div>
+                    <p>Average Score</p>
+                    <h2>0%</h2>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon orange">
+                    🏆
+                </div>
+
+                <div>
+                    <p>Top Performer</p>
+                    <h2>---</h2>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-icon purple">
+                    📚
+                </div>
+
+                <div>
+                    <p>Subjects</p>
+                    <h2>0</h2>
+                </div>
+
             </div>
 
         </section>
 
-        <section class="stats">
 
-            <div class="card">
-                <h3>Total Students</h3>
-                <p>0</p>
+        <!-- Dashboard Content -->
+        <section class="dashboard-grid">
+
+            <!-- Performance Overview -->
+            <div class="panel performance-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Performance Overview</h2>
+                        <p>Student performance will appear here</p>
+                    </div>
+
+                    <select>
+                        <option>This Year</option>
+                        <option>This Month</option>
+                        <option>This Week</option>
+                    </select>
+
+                </div>
+
+                <div class="empty-chart">
+
+                    <div class="chart-icon">
+                        📈
+                    </div>
+
+                    <h3>No Data Available</h3>
+
+                    <p>
+                        Add students to start analyzing performance.
+                    </p>
+
+                </div>
+
             </div>
 
-            <div class="card">
-                <h3>Average Score</h3>
-                <p>0%</p>
+
+            <!-- Quick Actions -->
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>Quick Actions</h2>
+                        <p>Manage your students</p>
+                    </div>
+
+                </div>
+
+
+                <div class="quick-actions">
+
+                    <a href="#" class="action-card">
+                        <span>➕</span>
+
+                        <div>
+                            <strong>Add Student</strong>
+                            <small>Add a new student</small>
+                        </div>
+                    </a>
+
+
+                    <a href="#" class="action-card">
+                        <span>👨‍🎓</span>
+
+                        <div>
+                            <strong>View Students</strong>
+                            <small>Manage student records</small>
+                        </div>
+                    </a>
+
+
+                    <a href="#" class="action-card">
+                        <span>🤖</span>
+
+                        <div>
+                            <strong>Make Prediction</strong>
+                            <small>Predict performance</small>
+                        </div>
+                    </a>
+
+                </div>
+
             </div>
 
-            <div class="card">
-                <h3>Top Performer</h3>
-                <p>---</p>
+        </section>
+
+
+        <!-- Recent Students -->
+        <section class="panel recent-panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h2>Recent Students</h2>
+                    <p>Recently added students</p>
+                </div>
+
+                <a href="#">View All →</a>
+
+            </div>
+
+
+            <div class="empty-state">
+
+                <div>👨‍🎓</div>
+
+                <h3>No Students Yet</h3>
+
+                <p>
+                    Add your first student to get started.
+                </p>
+
+                <a href="#" class="primary-btn">
+                    + Add Student
+                </a>
+
             </div>
 
         </section>
