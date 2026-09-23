@@ -1,21 +1,27 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 
+
 app = Flask(__name__)
 
 DATABASE = "students.db"
 
 
-# Connect to database
+# =========================================================
+# DATABASE CONNECTION
+# =========================================================
+
 def get_db_connection():
     connection = sqlite3.connect(DATABASE)
     connection.row_factory = sqlite3.Row
     return connection
 
 
-# Create database and table
-def create_database():
+# =========================================================
+# CREATE DATABASE AND TABLE
+# =========================================================
 
+def create_database():
     connection = get_db_connection()
 
     connection.execute("""
@@ -49,39 +55,203 @@ def create_database():
     connection.close()
 
 
-# Home page
+# =========================================================
+# HOME PAGE / DASHBOARD
+# =========================================================
+
 @app.route("/")
 def home():
 
     connection = get_db_connection()
 
-    students = connection.execute(
-        "SELECT * FROM students ORDER BY id DESC"
-    ).fetchall()
+    # -----------------------------------------------------
+    # GET ALL STUDENTS
+    # -----------------------------------------------------
+
+    students = connection.execute("""
+        SELECT *
+        FROM students
+        ORDER BY id DESC
+    """).fetchall()
+
+    # -----------------------------------------------------
+    # CALCULATE SUBJECT AVERAGES
+    # -----------------------------------------------------
+
+    averages = connection.execute("""
+        SELECT
+            AVG(python) AS python_avg,
+            AVG(dsa) AS dsa_avg,
+            AVG(dbms) AS dbms_avg,
+            AVG(web) AS web_avg
+        FROM students
+    """).fetchone()
+
+    # -----------------------------------------------------
+    # GRADE DISTRIBUTION
+    # -----------------------------------------------------
+
+    grade_counts = connection.execute("""
+        SELECT
+            grade,
+            COUNT(*) AS count
+        FROM students
+        GROUP BY grade
+        ORDER BY
+            CASE grade
+                WHEN 'A+' THEN 1
+                WHEN 'A' THEN 2
+                WHEN 'B' THEN 3
+                WHEN 'C' THEN 4
+                WHEN 'D' THEN 5
+                WHEN 'F' THEN 6
+                ELSE 7
+            END
+    """).fetchall()
+
+    # -----------------------------------------------------
+    # PASS / FAIL DISTRIBUTION
+    # -----------------------------------------------------
+
+    pass_fail = connection.execute("""
+        SELECT
+            result,
+            COUNT(*) AS count
+        FROM students
+        GROUP BY result
+    """).fetchall()
 
     connection.close()
 
-    return render_template("index.html", students=students)
+    # -----------------------------------------------------
+    # PREPARE SUBJECT CHART DATA
+    # -----------------------------------------------------
+
+    chart_data = [
+        round(averages["python_avg"] or 0, 2),
+        round(averages["dsa_avg"] or 0, 2),
+        round(averages["dbms_avg"] or 0, 2),
+        round(averages["web_avg"] or 0, 2)
+    ]
+
+    # -----------------------------------------------------
+    # PREPARE GRADE CHART DATA
+    # -----------------------------------------------------
+
+    grade_labels = [
+        row["grade"]
+        for row in grade_counts
+    ]
+
+    grade_data = [
+        row["count"]
+        for row in grade_counts
+    ]
+
+    # -----------------------------------------------------
+    # PREPARE PASS / FAIL CHART DATA
+    # -----------------------------------------------------
+
+    pass_fail_labels = [
+        row["result"]
+        for row in pass_fail
+    ]
+
+    pass_fail_data = [
+        row["count"]
+        for row in pass_fail
+    ]
+
+    # -----------------------------------------------------
+    # SEND DATA TO DASHBOARD
+    # -----------------------------------------------------
+
+    return render_template(
+        "index.html",
+        students=students,
+        chart_data=chart_data,
+        grade_labels=grade_labels,
+        grade_data=grade_data,
+        pass_fail_labels=pass_fail_labels,
+        pass_fail_data=pass_fail_data
+    )
 
 
-# Students page
-@app.route("/students")
-def students():
+# =========================================================
+# ATTENDANCE VS PERFORMANCE ANALYTICS
+# =========================================================
 
-    # Get search text from URL
-    search = request.args.get("search", "").strip()
-
-    # Get sorting option from URL
-    sort = request.args.get("sort", "latest")
+@app.route("/analytics")
+def analytics():
 
     connection = get_db_connection()
 
-    # Search
+    students = connection.execute("""
+        SELECT name, attendance, percentage
+        FROM students
+        ORDER BY id DESC
+    """).fetchall()
+
+    connection.close()
+
+    attendance_performance_data = [
+        {
+            "x": round(student["attendance"], 2),
+            "y": round(student["percentage"], 2),
+            "name": student["name"]
+        }
+        for student in students
+    ]
+
+    return render_template(
+        "analytics.html",
+        attendance_performance_data=attendance_performance_data
+    )
+
+# =========================================================
+# STUDENTS PAGE
+# SEARCH + SORT + PAGINATION
+# =========================================================
+
+@app.route("/students")
+def students():
+
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    sort = request.args.get(
+        "sort",
+        "latest"
+    )
+
+    page = request.args.get(
+        "page",
+        1,
+        type=int
+    )
+
+    per_page = 10
+
+    if page < 1:
+        page = 1
+
+    offset = (page - 1) * per_page
+
+    connection = get_db_connection()
+
+    # -----------------------------------------------------
+    # SEARCH
+    # -----------------------------------------------------
+
     if search:
 
         query = """
-            SELECT * FROM students
-            WHERE name LIKE ? OR roll LIKE ?
+            SELECT *
+            FROM students
+            WHERE name LIKE ?
+            OR roll LIKE ?
         """
 
         params = (
@@ -91,54 +261,139 @@ def students():
 
     else:
 
-        query = "SELECT * FROM students"
+        query = """
+            SELECT *
+            FROM students
+        """
 
         params = ()
 
-    # Sorting
+    # -----------------------------------------------------
+    # SORTING
+    # -----------------------------------------------------
+
     if sort == "highest":
 
-        query += " ORDER BY percentage DESC"
+        query += """
+            ORDER BY percentage DESC
+        """
 
     elif sort == "lowest":
 
-        query += " ORDER BY percentage ASC"
+        query += """
+            ORDER BY percentage ASC
+        """
 
     elif sort == "name_asc":
 
-        query += " ORDER BY name ASC"
+        query += """
+            ORDER BY name ASC
+        """
 
     elif sort == "name_desc":
 
-        query += " ORDER BY name DESC"
+        query += """
+            ORDER BY name DESC
+        """
 
     else:
 
-        query += " ORDER BY id DESC"
+        query += """
+            ORDER BY id DESC
+        """
+
+    # -----------------------------------------------------
+    # COUNT TOTAL STUDENTS
+    # -----------------------------------------------------
+
+    if search:
+
+        total_students = connection.execute(
+            """
+            SELECT COUNT(*)
+            FROM students
+            WHERE name LIKE ?
+            OR roll LIKE ?
+            """,
+            params
+        ).fetchone()[0]
+
+    else:
+
+        total_students = connection.execute(
+            """
+            SELECT COUNT(*)
+            FROM students
+            """
+        ).fetchone()[0]
+
+    # -----------------------------------------------------
+    # PAGINATION
+    # -----------------------------------------------------
+
+    query += """
+        LIMIT ? OFFSET ?
+    """
 
     students = connection.execute(
         query,
-        params
+        params + (
+            per_page,
+            offset
+        )
     ).fetchall()
 
     connection.close()
+
+    # -----------------------------------------------------
+    # CALCULATE TOTAL PAGES
+    # -----------------------------------------------------
+
+    total_pages = (
+        total_students + per_page - 1
+    ) // per_page
+
+    # -----------------------------------------------------
+    # HANDLE INVALID PAGE
+    # -----------------------------------------------------
+
+    if total_pages > 0 and page > total_pages:
+
+        return redirect(
+            url_for(
+                "students",
+                page=total_pages,
+                search=search,
+                sort=sort
+            )
+        )
 
     return render_template(
         "students.html",
         students=students,
         search=search,
-        sort=sort
+        sort=sort,
+        page=page,
+        total_pages=total_pages,
+        total_students=total_students
     )
 
 
-# Student details
+# =========================================================
+# STUDENT DETAILS
+# =========================================================
+
 @app.route("/student/<int:student_id>")
 def student_details(student_id):
 
     connection = get_db_connection()
 
     student = connection.execute(
-        "SELECT * FROM students WHERE id = ?",
+        """
+        SELECT *
+        FROM students
+        WHERE id = ?
+        """,
         (student_id,)
     ).fetchone()
 
@@ -153,39 +408,83 @@ def student_details(student_id):
     )
 
 
-# Edit student
-@app.route("/student/<int:student_id>/edit", methods=["GET", "POST"])
+# =========================================================
+# EDIT STUDENT
+# =========================================================
+
+@app.route(
+    "/student/<int:student_id>/edit",
+    methods=["GET", "POST"]
+)
 def edit_student(student_id):
 
     connection = get_db_connection()
 
     student = connection.execute(
-        "SELECT * FROM students WHERE id = ?",
+        """
+        SELECT *
+        FROM students
+        WHERE id = ?
+        """,
         (student_id,)
     ).fetchone()
 
     if student is None:
+
         connection.close()
+
         return "Student not found", 404
+
+    # -----------------------------------------------------
+    # UPDATE STUDENT
+    # -----------------------------------------------------
 
     if request.method == "POST":
 
         name = request.form["name"]
         roll = request.form["roll"]
         email = request.form["email"]
-        age = int(request.form["age"])
 
-        attendance = float(request.form["attendance"])
-        study_hours = float(request.form["study_hours"])
-        assignment = float(request.form["assignment"])
-        previous_marks = float(request.form["previous_marks"])
+        age = int(
+            request.form["age"]
+        )
 
-        python = float(request.form["python"])
-        dsa = float(request.form["dsa"])
-        dbms = float(request.form["dbms"])
-        web = float(request.form["web"])
+        attendance = float(
+            request.form["attendance"]
+        )
 
-        # Subject marks
+        study_hours = float(
+            request.form["study_hours"]
+        )
+
+        assignment = float(
+            request.form["assignment"]
+        )
+
+        previous_marks = float(
+            request.form["previous_marks"]
+        )
+
+        python = float(
+            request.form["python"]
+        )
+
+        dsa = float(
+            request.form["dsa"]
+        )
+
+        dbms = float(
+            request.form["dbms"]
+        )
+
+        web = float(
+            request.form["web"]
+        )
+
+        # -------------------------------------------------
+        # MARKS
+        # -------------------------------------------------
+
         marks = {
             "Python": python,
             "DSA": dsa,
@@ -193,16 +492,24 @@ def edit_student(student_id):
             "Web Development": web
         }
 
-        # Calculate total
-        total = sum(marks.values())
+        # -------------------------------------------------
+        # CALCULATIONS
+        # -------------------------------------------------
 
-        # Calculate average
+        total = sum(
+            marks.values()
+        )
+
         average = total / len(marks)
 
-        # Calculate percentage
-        percentage = (total / 400) * 100
+        percentage = (
+            total / 400
+        ) * 100
 
-        # Calculate grade
+        # -------------------------------------------------
+        # GRADE
+        # -------------------------------------------------
+
         if percentage >= 90:
             grade = "A+"
 
@@ -221,51 +528,73 @@ def edit_student(student_id):
         else:
             grade = "F"
 
-        # Pass / Fail
-        result = "Pass" if percentage >= 40 else "Fail"
+        # -------------------------------------------------
+        # RESULT
+        # -------------------------------------------------
 
-        # Update student
-        connection.execute("""
+        result = (
+            "Pass"
+            if percentage >= 40
+            else "Fail"
+        )
+
+        # -------------------------------------------------
+        # UPDATE DATABASE
+        # -------------------------------------------------
+
+        connection.execute(
+            """
             UPDATE students
+
             SET
                 name = ?,
                 roll = ?,
                 email = ?,
                 age = ?,
+
                 attendance = ?,
                 study_hours = ?,
                 assignment = ?,
                 previous_marks = ?,
+
                 python = ?,
                 dsa = ?,
                 dbms = ?,
                 web = ?,
+
                 total = ?,
                 average = ?,
                 percentage = ?,
                 grade = ?,
                 result = ?
+
             WHERE id = ?
-        """, (
-            name,
-            roll,
-            email,
-            age,
-            attendance,
-            study_hours,
-            assignment,
-            previous_marks,
-            python,
-            dsa,
-            dbms,
-            web,
-            total,
-            average,
-            percentage,
-            grade,
-            result,
-            student_id
-        ))
+            """,
+            (
+                name,
+                roll,
+                email,
+                age,
+
+                attendance,
+                study_hours,
+                assignment,
+                previous_marks,
+
+                python,
+                dsa,
+                dbms,
+                web,
+
+                total,
+                average,
+                percentage,
+                grade,
+                result,
+
+                student_id
+            )
+        )
 
         connection.commit()
         connection.close()
@@ -285,54 +614,107 @@ def edit_student(student_id):
     )
 
 
-# Delete student
-@app.route("/student/<int:student_id>/delete", methods=["POST"])
+# =========================================================
+# DELETE STUDENT
+# =========================================================
+
+@app.route(
+    "/student/<int:student_id>/delete",
+    methods=["POST"]
+)
 def delete_student(student_id):
 
     connection = get_db_connection()
 
     student = connection.execute(
-        "SELECT * FROM students WHERE id = ?",
+        """
+        SELECT *
+        FROM students
+        WHERE id = ?
+        """,
         (student_id,)
     ).fetchone()
 
     if student is None:
+
         connection.close()
+
         return "Student not found", 404
 
     connection.execute(
-        "DELETE FROM students WHERE id = ?",
+        """
+        DELETE FROM students
+        WHERE id = ?
+        """,
         (student_id,)
     )
 
     connection.commit()
     connection.close()
 
-    return redirect(url_for("students"))
+    return redirect(
+        url_for("students")
+    )
 
 
-# Add student
-@app.route("/add-student", methods=["GET", "POST"])
+# =========================================================
+# ADD STUDENT
+# =========================================================
+
+@app.route(
+    "/add-student",
+    methods=["GET", "POST"]
+)
 def add_student():
 
     if request.method == "POST":
 
         name = request.form["name"]
+
         roll = request.form["roll"]
+
         email = request.form["email"]
-        age = int(request.form["age"])
 
-        attendance = float(request.form["attendance"])
-        study_hours = float(request.form["study_hours"])
-        assignment = float(request.form["assignment"])
-        previous_marks = float(request.form["previous_marks"])
+        age = int(
+            request.form["age"]
+        )
 
-        python = float(request.form["python"])
-        dsa = float(request.form["dsa"])
-        dbms = float(request.form["dbms"])
-        web = float(request.form["web"])
+        attendance = float(
+            request.form["attendance"]
+        )
 
-        # Subject marks
+        study_hours = float(
+            request.form["study_hours"]
+        )
+
+        assignment = float(
+            request.form["assignment"]
+        )
+
+        previous_marks = float(
+            request.form["previous_marks"]
+        )
+
+        python = float(
+            request.form["python"]
+        )
+
+        dsa = float(
+            request.form["dsa"]
+        )
+
+        dbms = float(
+            request.form["dbms"]
+        )
+
+        web = float(
+            request.form["web"]
+        )
+
+        # -------------------------------------------------
+        # MARKS
+        # -------------------------------------------------
+
         marks = {
             "Python": python,
             "DSA": dsa,
@@ -340,16 +722,24 @@ def add_student():
             "Web Development": web
         }
 
-        # Calculate total
-        total = sum(marks.values())
+        # -------------------------------------------------
+        # CALCULATIONS
+        # -------------------------------------------------
 
-        # Calculate average
+        total = sum(
+            marks.values()
+        )
+
         average = total / len(marks)
 
-        # Calculate percentage
-        percentage = (total / 400) * 100
+        percentage = (
+            total / 400
+        ) * 100
 
-        # Calculate grade
+        # -------------------------------------------------
+        # GRADE
+        # -------------------------------------------------
+
         if percentage >= 90:
             grade = "A+"
 
@@ -368,30 +758,55 @@ def add_student():
         else:
             grade = "F"
 
-        # Pass / Fail
-        result = "Pass" if percentage >= 40 else "Fail"
+        # -------------------------------------------------
+        # RESULT
+        # -------------------------------------------------
 
-        # Highest and lowest subject
-        highest_subject = max(marks, key=marks.get)
-        lowest_subject = min(marks, key=marks.get)
+        result = (
+            "Pass"
+            if percentage >= 40
+            else "Fail"
+        )
 
-        # Save student to database
+        # -------------------------------------------------
+        # HIGHEST / LOWEST SUBJECT
+        # -------------------------------------------------
+
+        highest_subject = max(
+            marks,
+            key=marks.get
+        )
+
+        lowest_subject = min(
+            marks,
+            key=marks.get
+        )
+
+        # -------------------------------------------------
+        # INSERT INTO DATABASE
+        # -------------------------------------------------
+
         connection = get_db_connection()
 
-        cursor = connection.execute("""
+        cursor = connection.execute(
+            """
             INSERT INTO students (
+
                 name,
                 roll,
                 email,
                 age,
+
                 attendance,
                 study_hours,
                 assignment,
                 previous_marks,
+
                 python,
                 dsa,
                 dbms,
                 web,
+
                 total,
                 average,
                 percentage,
@@ -399,36 +814,44 @@ def add_student():
                 result
             )
 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            name,
-            roll,
-            email,
-            age,
-            attendance,
-            study_hours,
-            assignment,
-            previous_marks,
-            python,
-            dsa,
-            dbms,
-            web,
-            total,
-            average,
-            percentage,
-            grade,
-            result
-        ))
+            VALUES (
+                ?, ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?, ?, ?
+            )
+            """,
+            (
+                name,
+                roll,
+                email,
+                age,
+
+                attendance,
+                study_hours,
+                assignment,
+                previous_marks,
+
+                python,
+                dsa,
+                dbms,
+                web,
+
+                total,
+                average,
+                percentage,
+                grade,
+                result
+            )
+        )
 
         student_id = cursor.lastrowid
 
         connection.commit()
         connection.close()
 
-        # Show result
         return render_template(
             "result.html",
-
             name=name,
             marks=marks,
             total=total,
@@ -441,12 +864,19 @@ def add_student():
             student_id=student_id
         )
 
-    return render_template("add_student.html")
+    return render_template(
+        "add_student.html"
+    )
 
 
-# Start application
+# =========================================================
+# START APPLICATION
+# =========================================================
+
 if __name__ == "__main__":
 
     create_database()
 
-    app.run(debug=True)
+    app.run(
+        debug=True
+    )

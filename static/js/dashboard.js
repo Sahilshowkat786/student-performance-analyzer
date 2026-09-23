@@ -1,0 +1,285 @@
+// =========================================================
+// GET CHART DATA
+// =========================================================
+
+const chartDataElement = document.getElementById("chartData");
+
+const chartData = chartDataElement
+    ? JSON.parse(chartDataElement.dataset.chart)
+    : [];
+
+const gradeLabels = chartDataElement
+    ? JSON.parse(chartDataElement.dataset.gradeLabels)
+    : [];
+
+const gradeData = chartDataElement
+    ? JSON.parse(chartDataElement.dataset.gradeData)
+    : [];
+
+const passFailLabels = chartDataElement
+    ? JSON.parse(chartDataElement.dataset.passFailLabels)
+    : [];
+
+const passFailData = chartDataElement
+    ? JSON.parse(chartDataElement.dataset.passFailData)
+    : [];
+
+
+// =========================================================
+// DASHBOARD
+// =========================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    console.log("Dashboard JS loaded");
+
+    if (typeof Chart === "undefined") {
+
+        console.error("Chart.js is not loaded!");
+
+        return;
+    }
+
+
+    // =====================================================
+    // PERFORMANCE OVERVIEW
+    // =====================================================
+
+    const performanceCanvas =
+        document.getElementById("performanceChart");
+
+    if (performanceCanvas) {
+
+        new Chart(performanceCanvas, {
+
+            type: "bar",
+
+            data: {
+
+                labels: [
+                    "Python",
+                    "DSA",
+                    "DBMS",
+                    "Web Development"
+                ],
+
+                datasets: [
+                    {
+                        label: "Average Marks",
+
+                        data: chartData,
+
+                        borderWidth: 1
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        max: 100
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+
+    // =====================================================
+    // GRADE DISTRIBUTION
+    // =====================================================
+
+    const gradeCanvas =
+        document.getElementById("gradeChart");
+
+    if (gradeCanvas) {
+
+        new Chart(gradeCanvas, {
+
+            type: "bar",
+
+            data: {
+
+                labels: gradeLabels,
+
+                datasets: [
+                    {
+                        label: "Number of Students",
+
+                        data: gradeData,
+
+                        borderWidth: 1
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        ticks: {
+                            stepSize: 1
+                        }
+
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+
+    // =====================================================
+    // PASS / FAIL DISTRIBUTION
+    // =====================================================
+
+    const passFailCanvas =
+        document.getElementById("passFailChart");
+
+    if (passFailCanvas) {
+
+        new Chart(passFailCanvas, {
+
+            type: "doughnut",
+
+            data: {
+
+                labels: passFailLabels,
+
+                datasets: [
+                    {
+                        label: "Students",
+
+                        data: passFailData,
+
+                        borderWidth: 1
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false
+
+            }
+
+        });
+
+    }
+
+
+    // =====================================================
+    // ATTENDANCE VS PERFORMANCE
+    // =====================================================
+
+    const attendancePerformanceElement =
+        document.getElementById("attendancePerformanceData");
+
+    const attendancePerformanceCanvas =
+        document.getElementById("attendancePerformanceChart");
+
+    if (attendancePerformanceElement && attendancePerformanceCanvas) {
+
+        const attendancePerformanceData = JSON.parse(
+            attendancePerformanceElement.dataset.points
+        );
+
+        new Chart(attendancePerformanceCanvas, {
+
+            type: "scatter",
+
+            data: {
+
+                datasets: [
+                    {
+                        label: "Students",
+                        data: attendancePerformanceData,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    x: {
+                        type: "linear",
+                        title: {
+                            display: true,
+                            text: "Attendance (%)"
+                        },
+                        min: 0,
+                        max: 100
+                    },
+
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Performance / Percentage (%)"
+                        },
+                        min: 0,
+                        max: 100
+                    }
+
+                },
+
+                plugins: {
+
+                    tooltip: {
+                        callbacks: {
+                            title: function (items) {
+                                return items.length
+                                    ? items[0].raw.name
+                                    : "";
+                            },
+                            label: function (context) {
+                                return `Attendance: ${context.raw.x}% · Performance: ${context.raw.y}%`;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+});

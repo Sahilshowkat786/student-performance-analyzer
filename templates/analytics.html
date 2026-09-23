@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Attendance vs Performance - Student Analyzer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <h2>Student Analyzer</h2>
+        </div>
+
+        <nav>
+            <a href="{{ url_for('home') }}">Dashboard</a>
+            <a href="{{ url_for('students') }}">Students</a>
+            <a href="{{ url_for('add_student') }}">Add Student</a>
+            <a href="{{ url_for('analytics') }}" class="active">Analytics</a>
+            <a href="#">ML Prediction</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div>
+                <h1>Attendance vs Performance</h1>
+                <p>Explore how student attendance relates to performance.</p>
+            </div>
+        </header>
+
+        <section class="panel analytics-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Student Attendance and Percentage</h2>
+                    <p>Each point represents one student. Hover over a point to see their name.</p>
+                </div>
+            </div>
+
+            {% if attendance_performance_data %}
+                <div class="analytics-chart">
+                    <canvas id="attendancePerformanceChart"
+                            aria-label="Scatter chart of student attendance and performance"
+                            role="img"></canvas>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No Student Data Available</h3>
+                    <p>Add students with attendance and marks to view this analysis.</p>
+                    <a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a>
+                </div>
+            {% endif %}
+        </section>
+
+        <div id="attendancePerformanceData"
+             data-points='{{ attendance_performance_data | tojson }}'></div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+
+</html>

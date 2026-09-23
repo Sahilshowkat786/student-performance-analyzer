@@ -1,3 +1,7 @@
+/* =========================================================
+   GLOBAL
+========================================================= */
+
 * {
     margin: 0;
     padding: 0;
@@ -11,9 +15,9 @@ body {
 }
 
 
-/* =========================
+/* =========================================================
    SIDEBAR
-========================= */
+========================================================= */
 
 .sidebar {
     position: fixed;
@@ -36,49 +40,25 @@ body {
 /* Logo */
 
 .logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
     padding: 10px 12px 30px;
 }
 
-.logo-icon {
-    width: 42px;
-    height: 42px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: #2563eb;
-    border-radius: 10px;
-
-    font-size: 20px;
-}
-
 .logo h2 {
-    font-size: 18px;
-}
-
-.logo span {
-    font-size: 13px;
-    color: #9ca3af;
+    font-size: 24px;
+    color: white;
 }
 
 
 /* Navigation */
 
-.sidebar-nav {
+.sidebar nav {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.nav-item {
-    display: flex;
-    align-items: center;
-    gap: 13px;
+.sidebar nav a {
+    display: block;
 
     padding: 13px 15px;
 
@@ -90,28 +70,25 @@ body {
     transition: 0.2s;
 }
 
-.nav-item:hover {
+.sidebar nav a:hover {
     background: #1f2937;
     color: white;
 }
 
-.nav-item.active {
+.sidebar nav a:first-child {
     background: #2563eb;
     color: white;
 }
 
-.nav-item span {
-    width: 22px;
-}
-
-.sidebar-bottom {
-    margin-top: auto;
+.sidebar nav a.active {
+    background: #2563eb;
+    color: white;
 }
 
 
-/* =========================
+/* =========================================================
    MAIN CONTENT
-========================= */
+========================================================= */
 
 .main-content {
     margin-left: 250px;
@@ -122,11 +99,11 @@ body {
 }
 
 
-/* =========================
-   TOP BAR
-========================= */
+/* =========================================================
+   TOP HEADER
+========================================================= */
 
-.topbar {
+.top-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -134,53 +111,19 @@ body {
     margin-bottom: 30px;
 }
 
-.topbar h1 {
+.top-header h1 {
     font-size: 28px;
 }
 
-.topbar p {
+.top-header p {
     margin-top: 5px;
     color: #6b7280;
 }
 
 
-/* Profile */
-
-.profile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.profile-avatar {
-    width: 42px;
-    height: 42px;
-
-    border-radius: 50%;
-
-    background: #2563eb;
-    color: white;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-weight: bold;
-}
-
-.profile strong {
-    display: block;
-    font-size: 14px;
-}
-
-.profile small {
-    color: #6b7280;
-}
-
-
-/* =========================
+/* =========================================================
    STATISTICS
-========================= */
+========================================================= */
 
 .stats-grid {
     display: grid;
@@ -218,39 +161,26 @@ body {
     justify-content: center;
 
     font-size: 22px;
-}
 
-.blue {
     background: #dbeafe;
 }
 
-.green {
-    background: #dcfce7;
-}
-
-.orange {
-    background: #ffedd5;
-}
-
-.purple {
-    background: #f3e8ff;
-}
-
-.stat-card p {
-    color: #6b7280;
+.stat-card h3 {
     font-size: 13px;
+    color: #6b7280;
 
     margin-bottom: 5px;
 }
 
-.stat-card h2 {
+.stat-card p {
     font-size: 24px;
+    font-weight: bold;
 }
 
 
-/* =========================
+/* =========================================================
    DASHBOARD GRID
-========================= */
+========================================================= */
 
 .dashboard-grid {
     display: grid;
@@ -263,7 +193,9 @@ body {
 }
 
 
-/* Panels */
+/* =========================================================
+   PANELS
+========================================================= */
 
 .panel {
     background: white;
@@ -295,34 +227,37 @@ body {
     font-size: 13px;
 }
 
+.panel-header > a {
+    color: #2563eb;
 
-/* =========================
-   CHART
-========================= */
+    text-decoration: none;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   CHARTS
+========================================================= */
 
 .empty-chart {
     height: 280px;
+    width: 100%;
+    position: relative;
+}
 
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-    align-items: center;
-
-    text-align: center;
-
-    color: #6b7280;
+.empty-chart canvas {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .chart-icon {
     font-size: 45px;
-
     margin-bottom: 15px;
 }
 
 .empty-chart h3 {
     color: #374151;
-
     margin-bottom: 8px;
 }
 
@@ -331,35 +266,24 @@ body {
 }
 
 
-/* Select */
-
-select {
-    padding: 8px 12px;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 6px;
-
-    background: white;
-}
-
-
-/* =========================
+/* =========================================================
    QUICK ACTIONS
-========================= */
+========================================================= */
 
 .quick-actions {
     display: flex;
     flex-direction: column;
+}
 
+.action-buttons {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
 }
 
-.action-card {
+.action-btn {
     display: flex;
     align-items: center;
-
-    gap: 15px;
 
     padding: 14px;
 
@@ -371,51 +295,82 @@ select {
 
     color: #1f2937;
 
+    background: white;
+
     transition: 0.2s;
 }
 
-.action-card:hover {
+.action-btn:hover {
     border-color: #2563eb;
 
     background: #f8faff;
+
+    color: #2563eb;
 }
 
-.action-card > span {
-    font-size: 22px;
+
+/* =========================================================
+   RECENT STUDENTS TABLE
+========================================================= */
+
+.table-container {
+    width: 100%;
+
+    overflow-x: auto;
 }
 
-.action-card strong {
-    display: block;
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    margin-top: 10px;
+}
+
+thead {
+    background: #f8fafc;
+}
+
+th {
+    padding: 14px 12px;
+
+    text-align: left;
 
     font-size: 14px;
+
+    color: #374151;
+
+    border-bottom: 2px solid #e5e7eb;
 }
 
-.action-card small {
-    display: block;
+td {
+    padding: 14px 12px;
 
-    margin-top: 4px;
+    font-size: 14px;
 
-    color: #6b7280;
-
-    font-size: 12px;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-
-/* =========================
-   RECENT STUDENTS
-========================= */
-
-.recent-panel {
-    margin-bottom: 30px;
+tbody tr:hover {
+    background: #f9fafb;
 }
 
-.panel-header > a {
+td a {
     color: #2563eb;
 
     text-decoration: none;
 
-    font-size: 13px;
+    margin-right: 12px;
 }
+
+td a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
 
 .empty-state {
     text-align: center;
@@ -443,6 +398,11 @@ select {
     margin-bottom: 20px;
 }
 
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
 .primary-btn {
     display: inline-block;
 
@@ -460,80 +420,44 @@ select {
 }
 
 
-/* =========================
-   RESPONSIVE
-========================= */
+/* =========================================================
+   SELECT
+========================================================= */
 
-@media (max-width: 1100px) {
+select {
+    padding: 8px 12px;
 
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    border: 1px solid #e5e7eb;
 
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
+    border-radius: 6px;
+
+    background: white;
 }
 
 
-@media (max-width: 700px) {
-
-    .sidebar {
-        position: relative;
-
-        width: 100%;
-        height: auto;
-    }
-
-    .sidebar-nav {
-        flex-direction: row;
-
-        overflow-x: auto;
-    }
-
-    .sidebar-bottom {
-        display: none;
-    }
-
-    .main-content {
-        margin-left: 0;
-
-        padding: 20px;
-    }
-
-    .topbar {
-        align-items: flex-start;
-
-        gap: 15px;
-    }
-
-    .profile {
-        display: none;
-    }
-
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .logo {
-        padding-bottom: 20px;
-    }
-}
-
-/* Add Student Form */
+/* =========================================================
+   ADD / EDIT STUDENT FORM
+========================================================= */
 
 .form-section {
     padding: 40px;
+
     display: flex;
+
     justify-content: center;
 }
 
 .form-container {
     width: 100%;
+
     max-width: 800px;
+
     background: white;
+
     padding: 35px;
+
     border-radius: 12px;
+
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
@@ -543,6 +467,7 @@ select {
 
 .form-description {
     margin-bottom: 30px;
+
     color: #666;
 }
 
@@ -552,75 +477,76 @@ select {
 
 .form-group label {
     display: block;
+
     margin-bottom: 8px;
+
     font-weight: 600;
 }
 
 .form-group input {
     width: 100%;
+
     padding: 12px;
+
     border: 1px solid #ccc;
+
     border-radius: 8px;
+
     font-size: 15px;
-    box-sizing: border-box;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #333;
+
+    border-color: #2563eb;
 }
 
 .form-row {
     display: grid;
+
     grid-template-columns: 1fr 1fr;
+
     gap: 20px;
 }
 
 .submit-btn {
     width: 100%;
+
     padding: 14px;
+
     border: none;
+
     border-radius: 8px;
-    background: #222;
+
+    background: #2563eb;
+
     color: white;
+
     font-size: 16px;
+
     cursor: pointer;
 }
 
 .submit-btn:hover {
-    background: #444;
+    background: #1d4ed8;
 }
 
 
-@media (max-width: 700px) {
-
-    .form-section {
-        padding: 20px;
-    }
-
-    .form-container {
-        padding: 25px;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-}
-
-/* =========================
+/* =========================================================
    PERFORMANCE RESULT PAGE
-========================= */
+========================================================= */
 
 .result-section {
     padding: 40px;
+
     display: flex;
+
     justify-content: center;
 }
 
 .result-container {
     width: 100%;
+
     max-width: 1000px;
 
     background: white;
@@ -638,13 +564,12 @@ select {
 
 .result-description {
     color: #666;
+
     margin-bottom: 30px;
 }
 
 
-/* =========================
-   RESULT CARDS
-========================= */
+/* Result Cards */
 
 .result-cards {
     display: grid;
@@ -685,9 +610,7 @@ select {
 }
 
 
-/* =========================
-   PASS / FAIL RESULT
-========================= */
+/* Pass / Fail */
 
 .performance-result {
     padding: 22px;
@@ -712,9 +635,7 @@ select {
 }
 
 
-/* =========================
-   SUBJECT PERFORMANCE
-========================= */
+/* Subject Performance */
 
 .subject-section {
     margin-bottom: 25px;
@@ -745,9 +666,7 @@ select {
 }
 
 
-/* =========================
-   SUBJECT ANALYSIS
-========================= */
+/* Subject Analysis */
 
 .subject-analysis {
     display: grid;
@@ -784,9 +703,7 @@ select {
 }
 
 
-/* =========================
-   RESULT ACTIONS
-========================= */
+/* Result Actions */
 
 .result-actions {
     display: flex;
@@ -829,20 +746,102 @@ select {
 }
 
 
-/* =========================
-   RESULT RESPONSIVE
-========================= */
+/* Delete Button */
+
+.delete-btn {
+    padding: 10px 16px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 @media (max-width: 900px) {
 
     .result-cards {
         grid-template-columns: repeat(2, 1fr);
     }
-
 }
 
 
 @media (max-width: 700px) {
+
+    .sidebar {
+        position: relative;
+
+        width: 100%;
+
+        height: auto;
+    }
+
+    .sidebar nav {
+        flex-direction: row;
+
+        overflow-x: auto;
+    }
+
+    .sidebar nav a {
+        white-space: nowrap;
+    }
+
+    .main-content {
+        margin-left: 0;
+
+        padding: 20px;
+    }
+
+    .analytics-chart {
+        height: 360px;
+    }
+
+    .top-header {
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .logo {
+        padding-bottom: 20px;
+    }
+
+    .form-section {
+        padding: 20px;
+    }
+
+    .form-container {
+        padding: 25px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+
+        gap: 0;
+    }
 
     .result-section {
         padding: 20px;
@@ -871,13 +870,19 @@ select {
     .secondary-btn {
         text-align: center;
     }
-
 }
 
-.delete-btn {
-    padding: 10px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
+
+/* =========================================================
+   ATTENDANCE ANALYTICS
+========================================================= */
+
+.analytics-panel {
+    max-width: 1200px;
+}
+
+.analytics-chart {
+    position: relative;
+    width: 100%;
+    height: 480px;
 }
