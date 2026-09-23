@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Prediction - Student Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="logo"><h2>Student Analyzer</h2></div>
+        <nav>
+            <a href="{{ url_for('home') }}">Dashboard</a>
+            <a href="{{ url_for('students') }}">Students</a>
+            <a href="{{ url_for('add_student') }}">Add Student</a>
+            <a href="{{ url_for('analytics') }}">Analytics</a>
+            <a href="{{ url_for('prediction') }}" class="active">ML Prediction</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-header">
+            <div>
+                <h1>ML Performance Prediction</h1>
+                <p>Explore an estimated final percentage from a student's current indicators.</p>
+            </div>
+        </header>
+
+        <section class="analytics-section">
+            <div class="panel prediction-info">
+                <div class="panel-header">
+                    <div><h2>About this estimate</h2><p>Linear Regression trained on saved student records</p></div>
+                </div>
+                <p>This is an ML prediction based on historical records, not an observed result or guarantee of future performance.</p>
+                {% if model_report.ready %}
+                    <p class="model-status">Model trained with {{ model_report.sample_count }} saved records. Evaluation uses a held-out set of {{ model_report.test_sample_count }} records; these metrics are exploratory and do not establish reliable accuracy.</p>
+                    <div class="prediction-metrics">
+                        <div><span>Holdout MAE</span><strong>{{ "%.2f"|format(model_report.mae) }} percentage points</strong></div>
+                        <div><span>Holdout R²</span><strong>{{ "%.3f"|format(model_report.r2) }}</strong></div>
+                    </div>
+                {% else %}
+                    <p class="model-status model-status-warning">A prediction is unavailable until the database has at least {{ model_report.minimum_samples }} student records. It currently has {{ model_report.sample_count }}. The form can be reviewed, but no estimate will be shown until there is enough data to train and evaluate the model.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="analytics-section">
+            <div class="form-container prediction-form">
+                <h2>Enter student information</h2>
+                <p class="form-description">Use attendance, study hours, assignment score, and previous marks. Percentage fields accept values from 0 to 100.</p>
+
+                {% if form_error %}<div class="prediction-alert prediction-alert-error" role="alert">{{ form_error }}</div>{% endif %}
+                {% if prediction_message %}<div class="prediction-alert" role="status">{{ prediction_message }}</div>{% endif %}
+
+                <form method="post" action="{{ url_for('prediction') }}">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="attendance">Attendance (%)</label>
+                            <input id="attendance" name="attendance" type="number" min="0" max="100" step="0.01" required value="{{ form_values.attendance }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="study_hours">Study Hours</label>
+                            <input id="study_hours" name="study_hours" type="number" min="0" step="0.01" required value="{{ form_values.study_hours }}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="assignment">Assignment Score (%)</label>
+                            <input id="assignment" name="assignment" type="number" min="0" max="100" step="0.01" required value="{{ form_values.assignment }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="previous_marks">Previous Marks (%)</label>
+                            <input id="previous_marks" name="previous_marks" type="number" min="0" max="100" step="0.01" required value="{{ form_values.previous_marks }}">
+                        </div>
+                    </div>
+                    <button class="submit-btn" type="submit">Estimate Performance</button>
+                </form>
+            </div>
+        </section>
+
+        {% if predicted_percentage is not none %}
+        <section class="analytics-section" aria-live="polite">
+            <div class="panel prediction-result">
+                <div class="panel-header"><div><h2>Predicted Percentage</h2><p>ML estimate for the values submitted above</p></div></div>
+                <div class="prediction-value">{{ "%.2f"|format(predicted_percentage) }}%</div>
+                <p>This is a machine-learning prediction, not a confirmed final percentage. Treat it as an exploratory estimate.</p>
+                {% if prediction_note %}<p class="model-status-warning">{{ prediction_note }}</p>{% endif %}
+                <h3>Input values used</h3>
+                <div class="prediction-inputs">
+                    {% for feature in feature_columns %}
+                        <div><span>{{ feature.replace('_', ' ')|title }}</span><strong>{{ "%.2f"|format(inputs_used[feature]) }}{% if feature != 'study_hours' %}%{% endif %}</strong></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% elif inputs_used %}
+        <section class="analytics-section" aria-live="polite">
+            <div class="panel prediction-result">
+                <h2>Submitted Input Values</h2>
+                <p>No predicted percentage was generated because the saved dataset is below the training threshold.</p>
+                <div class="prediction-inputs">
+                    {% for feature in feature_columns %}
+                        <div><span>{{ feature.replace('_', ' ')|title }}</span><strong>{{ "%.2f"|format(inputs_used[feature]) }}{% if feature != 'study_hours' %}%{% endif %}</strong></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+    </main>
+</body>
+</html>

@@ -919,6 +919,88 @@ select {
     height: 330px;
 }
 
+/* =========================================================
+   ML PREDICTION
+========================================================= */
+
+.prediction-info,
+.prediction-result {
+    max-width: 1000px;
+}
+
+.prediction-info > p,
+.prediction-result > p {
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 12px;
+}
+
+.model-status {
+    margin-top: 12px;
+}
+
+.model-status-warning,
+.prediction-alert {
+    padding: 13px 15px;
+    border-radius: 8px;
+    background: #fffbeb;
+    color: #92400e;
+    line-height: 1.5;
+}
+
+.prediction-alert {
+    margin-bottom: 18px;
+}
+
+.prediction-alert-error {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.prediction-metrics,
+.prediction-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.prediction-metrics > div,
+.prediction-inputs > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px;
+    border-radius: 8px;
+    background: #f5f7fb;
+}
+
+.prediction-metrics span,
+.prediction-inputs span {
+    color: #6b7280;
+    font-size: 13px;
+    text-transform: capitalize;
+}
+
+.prediction-form {
+    max-width: 1000px;
+}
+
+.prediction-form h2 {
+    margin-bottom: 8px;
+}
+
+.prediction-value {
+    margin: 8px 0 14px;
+    color: #2563eb;
+    font-size: 42px;
+    font-weight: 700;
+}
+
+.prediction-result h3 {
+    margin-top: 20px;
+}
+
 @media (max-width: 900px) {
     .analytics-chart-grid {
         grid-template-columns: 1fr;

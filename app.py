@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
+import math
 import sqlite3
+
+from ml_model import FEATURE_COLUMNS, MINIMUM_TRAINING_SAMPLES, train_linear_regression
 
 
 app = Flask(__name__)
@@ -297,6 +300,106 @@ def analytics():
         study_hours_performance_data=study_hours_performance_data,
         assignment_performance_data=assignment_performance_data,
         previous_marks_performance_data=previous_marks_performance_data
+    )
+
+
+# =========================================================
+# ML PERFORMANCE PREDICTION
+# =========================================================
+
+@app.route("/prediction", methods=["GET", "POST"])
+def prediction():
+
+    connection = get_db_connection()
+
+    training_records = connection.execute("""
+        SELECT attendance, study_hours, assignment, previous_marks, percentage
+        FROM students
+        ORDER BY id
+    """).fetchall()
+
+    connection.close()
+
+    model_report = train_linear_regression(training_records)
+    form_values = {feature: "" for feature in FEATURE_COLUMNS}
+    form_error = None
+    prediction_message = None
+    prediction_note = None
+    predicted_percentage = None
+    inputs_used = None
+
+    if request.method == "POST":
+
+        form_values = {
+            feature: request.form.get(feature, "").strip()
+            for feature in FEATURE_COLUMNS
+        }
+
+        try:
+            inputs_used = {
+                feature: float(form_values[feature])
+                for feature in FEATURE_COLUMNS
+            }
+        except (TypeError, ValueError):
+            form_error = "Enter a valid number for each field."
+            inputs_used = None
+
+        if inputs_used is not None:
+
+            if not all(math.isfinite(value) for value in inputs_used.values()):
+                form_error = "Enter finite numeric values for every field."
+
+            elif not 0 <= inputs_used["attendance"] <= 100:
+                form_error = "Attendance must be between 0 and 100 percent."
+
+            elif inputs_used["study_hours"] < 0:
+                form_error = "Study hours cannot be negative."
+
+            elif not 0 <= inputs_used["assignment"] <= 100:
+                form_error = "Assignment score must be between 0 and 100 percent."
+
+            elif not 0 <= inputs_used["previous_marks"] <= 100:
+                form_error = "Previous marks must be between 0 and 100 percent."
+
+        if form_error is None:
+
+            if not model_report["ready"]:
+                prediction_message = (
+                    "No prediction was generated. The model needs at least "
+                    f"{MINIMUM_TRAINING_SAMPLES} saved student records; "
+                    f"the database currently has {model_report['sample_count']}. "
+                    "Your submitted values are shown below."
+                )
+
+            else:
+                feature_row = [[
+                    inputs_used[feature]
+                    for feature in FEATURE_COLUMNS
+                ]]
+
+                raw_prediction = float(
+                    model_report["model"].predict(feature_row)[0]
+                )
+                bounded_prediction = min(100.0, max(0.0, raw_prediction))
+                predicted_percentage = round(bounded_prediction, 2)
+
+                if bounded_prediction != raw_prediction:
+                    prediction_note = (
+                        "The linear model estimated a value outside the valid "
+                        "0-100 range, so the displayed percentage is limited "
+                        "to that range."
+                    )
+
+    return render_template(
+        "prediction.html",
+        model_report=model_report,
+        form_values=form_values,
+        form_error=form_error,
+        prediction_message=prediction_message,
+        prediction_note=prediction_note,
+        predicted_percentage=predicted_percentage,
+        inputs_used=inputs_used,
+        feature_columns=FEATURE_COLUMNS
     )
 
 # =========================================================
