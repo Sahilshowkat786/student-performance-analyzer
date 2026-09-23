@@ -366,4 +366,89 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
+    // =====================================================
+    // ASSIGNMENT SCORE VS PERFORMANCE
+    // =====================================================
+
+    const assignmentPerformanceElement =
+        document.getElementById("assignmentPerformanceData");
+
+    const assignmentPerformanceCanvas =
+        document.getElementById("assignmentPerformanceChart");
+
+    if (assignmentPerformanceElement && assignmentPerformanceCanvas) {
+
+        const assignmentPerformanceData = JSON.parse(
+            assignmentPerformanceElement.dataset.points
+        );
+
+        new Chart(assignmentPerformanceCanvas, {
+
+            type: "scatter",
+
+            data: {
+
+                datasets: [
+                    {
+                        label: "Students",
+                        data: assignmentPerformanceData,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    x: {
+                        type: "linear",
+                        title: {
+                            display: true,
+                            text: "Assignment Score (%)"
+                        },
+                        min: 0,
+                        max: 100
+                    },
+
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Performance / Percentage (%)"
+                        },
+                        min: 0,
+                        max: 100
+                    }
+
+                },
+
+                plugins: {
+
+                    tooltip: {
+                        callbacks: {
+                            title: function (items) {
+                                return items.length
+                                    ? items[0].raw.name
+                                    : "";
+                            },
+                            label: function (context) {
+                                return `Assignment Score: ${context.raw.x}% | Performance: ${context.raw.y}%`;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
 });

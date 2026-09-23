@@ -32,7 +32,7 @@
         <header class="top-header">
             <div>
                 <h1>Student Analytics</h1>
-                <p>Explore how attendance and study hours relate to performance.</p>
+                <p>Explore how attendance, study hours, and assignment scores relate to performance.</p>
             </div>
         </header>
 
@@ -87,6 +87,32 @@
 
         <div id="studyHoursPerformanceData"
              data-points='{{ study_hours_performance_data | tojson }}'></div>
+
+        <section class="panel analytics-panel">
+            <div class="panel-header">
+                <div>
+                    <h2>Assignment Score vs Performance</h2>
+                    <p>Each point represents one student. Hover over a point to see their name and values.</p>
+                </div>
+            </div>
+
+            {% if assignment_performance_data %}
+                <div class="analytics-chart">
+                    <canvas id="assignmentPerformanceChart"
+                            aria-label="Scatter chart of student assignment scores and performance"
+                            role="img"></canvas>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No Student Data Available</h3>
+                    <p>Add students with assignment scores and marks to view this analysis.</p>
+                    <a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a>
+                </div>
+            {% endif %}
+        </section>
+
+        <div id="assignmentPerformanceData"
+             data-points='{{ assignment_performance_data | tojson }}'></div>
     </main>
 
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
