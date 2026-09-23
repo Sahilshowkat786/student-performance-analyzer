@@ -1,26 +1,28 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, g, has_app_context, render_template, request, redirect, url_for
 import math
-import os
 import re
-import sqlite3
 
+from database import DatabaseError, create_database, get_db_connection as open_db_connection
 from ml_model import FEATURE_COLUMNS, MINIMUM_TRAINING_SAMPLES, train_linear_regression
 
 
 app = Flask(__name__)
-
-APP_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(APP_DIRECTORY, "students.db")
-
 
 # =========================================================
 # DATABASE CONNECTION
 # =========================================================
 
 def get_db_connection():
-    connection = sqlite3.connect(DATABASE)
-    connection.row_factory = sqlite3.Row
+    connection = open_db_connection()
+    if has_app_context():
+        g.setdefault("student_analyzer_connections", []).append(connection)
     return connection
+
+
+@app.teardown_appcontext
+def close_db_connections(_error=None):
+    for connection in g.pop("student_analyzer_connections", []):
+        connection.close()
 
 
 def validate_student_form(form):
@@ -109,47 +111,15 @@ def internal_server_error(_error):
     ), 500
 
 
-# =========================================================
-# CREATE DATABASE AND TABLE
-# =========================================================
-
-def create_database():
-    database_directory = os.path.dirname(DATABASE)
-    os.makedirs(database_directory, exist_ok=True)
-
-    connection = get_db_connection()
-
-    try:
-        connection.execute("""
-            CREATE TABLE IF NOT EXISTS students (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-                name TEXT NOT NULL,
-                roll TEXT NOT NULL,
-                email TEXT NOT NULL,
-                age INTEGER NOT NULL,
-
-                attendance REAL NOT NULL,
-                study_hours REAL NOT NULL,
-                assignment REAL NOT NULL,
-                previous_marks REAL NOT NULL,
-
-                python REAL NOT NULL,
-                dsa REAL NOT NULL,
-                dbms REAL NOT NULL,
-                web REAL NOT NULL,
-
-                total REAL NOT NULL,
-                average REAL NOT NULL,
-                percentage REAL NOT NULL,
-                grade TEXT NOT NULL,
-                result TEXT NOT NULL
-            )
-        """)
-
-        connection.commit()
-    finally:
-        connection.close()
+@app.errorhandler(DatabaseError)
+def database_unavailable(error):
+    app.logger.error("Database request failed: %s", error)
+    return render_template(
+        "error.html",
+        error_code=500,
+        error_title="Database temporarily unavailable",
+        error_message="We could not load or save student data. Please try again shortly."
+    ), 500
 
 
 # Gunicorn imports this module instead of executing it as __main__.
@@ -551,8 +521,8 @@ def students():
         query = """
             SELECT *
             FROM students
-            WHERE name LIKE ?
-            OR roll LIKE ?
+            WHERE name LIKE %s
+            OR roll LIKE %s
         """
 
         params = (
@@ -611,29 +581,29 @@ def students():
 
         total_students = connection.execute(
             """
-            SELECT COUNT(*)
+            SELECT COUNT(*) AS count
             FROM students
-            WHERE name LIKE ?
-            OR roll LIKE ?
+            WHERE name LIKE %s
+            OR roll LIKE %s
             """,
             params
-        ).fetchone()[0]
+        ).fetchone()["count"]
 
     else:
 
         total_students = connection.execute(
             """
-            SELECT COUNT(*)
+            SELECT COUNT(*) AS count
             FROM students
             """
-        ).fetchone()[0]
+        ).fetchone()["count"]
 
     # -----------------------------------------------------
     # PAGINATION
     # -----------------------------------------------------
 
     query += """
-        LIMIT ? OFFSET ?
+        LIMIT %s OFFSET %s
     """
 
     students = connection.execute(
@@ -693,7 +663,7 @@ def student_details(student_id):
         """
         SELECT *
         FROM students
-        WHERE id = ?
+        WHERE id = %s
         """,
         (student_id,)
     ).fetchone()
@@ -725,7 +695,7 @@ def edit_student(student_id):
         """
         SELECT *
         FROM students
-        WHERE id = ?
+        WHERE id = %s
         """,
         (student_id,)
     ).fetchone()
@@ -785,28 +755,28 @@ def edit_student(student_id):
             UPDATE students
 
             SET
-                name = ?,
-                roll = ?,
-                email = ?,
-                age = ?,
+                name = %s,
+                roll = %s,
+                email = %s,
+                age = %s,
 
-                attendance = ?,
-                study_hours = ?,
-                assignment = ?,
-                previous_marks = ?,
+                attendance = %s,
+                study_hours = %s,
+                assignment = %s,
+                previous_marks = %s,
 
-                python = ?,
-                dsa = ?,
-                dbms = ?,
-                web = ?,
+                python = %s,
+                dsa = %s,
+                dbms = %s,
+                web = %s,
 
-                total = ?,
-                average = ?,
-                percentage = ?,
-                grade = ?,
-                result = ?
+                total = %s,
+                average = %s,
+                percentage = %s,
+                grade = %s,
+                result = %s
 
-            WHERE id = ?
+            WHERE id = %s
             """,
             (
                 name,
@@ -870,7 +840,7 @@ def delete_student(student_id):
         """
         SELECT *
         FROM students
-        WHERE id = ?
+        WHERE id = %s
         """,
         (student_id,)
     ).fetchone()
@@ -884,7 +854,7 @@ def delete_student(student_id):
     connection.execute(
         """
         DELETE FROM students
-        WHERE id = ?
+        WHERE id = %s
         """,
         (student_id,)
     )
@@ -988,11 +958,12 @@ def add_student():
             )
 
             VALUES (
-                ?, ?, ?, ?,
-                ?, ?, ?, ?,
-                ?, ?, ?, ?,
-                ?, ?, ?, ?, ?
+                %s, %s, %s, %s,
+                %s, %s, %s, %s,
+                %s, %s, %s, %s,
+                %s, %s, %s, %s, %s
             )
+            RETURNING id
             """,
             (
                 name,
@@ -1018,7 +989,7 @@ def add_student():
             )
         )
 
-        student_id = cursor.lastrowid
+        student_id = cursor.fetchone()["id"]
 
         connection.commit()
         connection.close()
