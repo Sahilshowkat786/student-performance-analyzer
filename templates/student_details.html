@@ -10,6 +10,7 @@
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
 
@@ -52,6 +53,74 @@
             <p class="result-description">
                 Complete student performance details
             </p>
+
+
+            <!-- Individual Analytics -->
+
+            <section class="panel student-analytics-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>{{ student.name }} - Individual Analytics</h2>
+                        <p>Subject marks and academic indicators for this student.</p>
+                    </div>
+
+                </div>
+
+                <div class="analytics-chart">
+                    <canvas id="studentPerformanceChart"
+                            aria-label="Subject performance chart for {{ student.name }}"
+                            role="img"></canvas>
+                </div>
+
+                <div id="studentAnalyticsData"
+                     data-marks='{{ [student.python, student.dsa, student.dbms, student.web] | tojson }}'></div>
+
+            </section>
+
+
+            <section class="panel student-analytics-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <h2>{{ student.name }} - Academic Overview</h2>
+                        <p>Attendance, study habits, and performance indicators.</p>
+                    </div>
+
+                </div>
+
+                <div class="student-metrics-grid">
+
+                    <div class="result-card">
+                        <h3>Attendance</h3>
+                        <p>{{ "%.1f"|format(student.attendance) }}%</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Study Hours</h3>
+                        <p>{{ "%.1f"|format(student.study_hours) }}</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Assignment Score</h3>
+                        <p>{{ "%.1f"|format(student.assignment) }}%</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Previous Marks</h3>
+                        <p>{{ "%.1f"|format(student.previous_marks) }}%</p>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>Current Percentage</h3>
+                        <p>{{ "%.2f"|format(student.percentage) }}%</p>
+                    </div>
+
+                </div>
+
+            </section>
 
 
             <!-- Personal Information -->
@@ -259,6 +328,8 @@
         </div>
 
     </section>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
 </body>
 

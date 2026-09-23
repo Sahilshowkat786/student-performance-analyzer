@@ -536,4 +536,68 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
+    // =====================================================
+    // INDIVIDUAL STUDENT PERFORMANCE
+    // =====================================================
+
+    const studentAnalyticsElement =
+        document.getElementById("studentAnalyticsData");
+
+    const studentPerformanceCanvas =
+        document.getElementById("studentPerformanceChart");
+
+    if (studentAnalyticsElement && studentPerformanceCanvas) {
+
+        const studentMarks = JSON.parse(
+            studentAnalyticsElement.dataset.marks
+        );
+
+        new Chart(studentPerformanceCanvas, {
+
+            type: "bar",
+
+            data: {
+
+                labels: [
+                    "Python",
+                    "DSA",
+                    "DBMS",
+                    "Web Development"
+                ],
+
+                datasets: [
+                    {
+                        label: "Marks (%)",
+                        data: studentMarks,
+                        borderWidth: 1
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: "Marks (%)"
+                        }
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
 });

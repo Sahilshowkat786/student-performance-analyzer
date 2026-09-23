@@ -886,3 +886,13 @@ select {
     width: 100%;
     height: 480px;
 }
+
+.student-analytics-panel {
+    margin-bottom: 25px;
+}
+
+.student-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 18px;
+}
