@@ -1,385 +1,108 @@
-```html
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Students</title>
-
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/style.css') }}"
-    />
-  </head>
-
-  <body>
-
-    <!-- Navigation -->
-    <nav class="topbar">
-
-      <h2>Student Performance Analyzer</h2>
-
-      <div>
-        <a href="{{ url_for('home') }}">Dashboard</a>
-
-        <a href="{{ url_for('add_student') }}">Add Student</a>
-
-        <a href="{{ url_for('analytics') }}">Analytics</a>
-      </div>
-
-    </nav>
-
-
-    <!-- Students Section -->
-    <section class="result-section">
-
-      <div class="result-container">
-
-        <h1>Students</h1>
-
-        <p class="result-description">
-          All students stored in the database.
-        </p>
-
-
-        <!-- Search -->
-        <form
-          method="GET"
-          action="{{ url_for('students') }}"
-          style="margin-bottom: 25px"
-        >
-
-          <input
-            type="text"
-            name="search"
-            placeholder="Search by name or roll number..."
-            value="{{ search }}"
-            style="padding: 12px; width: 60%"
-          />
-
-          <button type="submit" class="submit-btn">
-            Search
-          </button>
-
-          <a
-            href="{{ url_for('students') }}"
-            class="secondary-btn"
-          >
-            Clear
-          </a>
-
-        </form>
-
-
-        <!-- Sorting -->
-        <form
-          method="GET"
-          action="{{ url_for('students') }}"
-          style="margin-bottom: 25px"
-        >
-
-          <!-- Keep search when sorting -->
-          <input
-            type="hidden"
-            name="search"
-            value="{{ search }}"
-          />
-
-          <label for="sort">
-            <strong>Sort by:</strong>
-          </label>
-
-          <select
-            name="sort"
-            id="sort"
-            onchange="this.form.submit()"
-          >
-
-            <option
-              value="latest"
-              {% if sort == "latest" %}selected{% endif %}
-            >
-              Latest
-            </option>
-
-            <option
-              value="highest"
-              {% if sort == "highest" %}selected{% endif %}
-            >
-              Highest Percentage
-            </option>
-
-            <option
-              value="lowest"
-              {% if sort == "lowest" %}selected{% endif %}
-            >
-              Lowest Percentage
-            </option>
-
-            <option
-              value="name_asc"
-              {% if sort == "name_asc" %}selected{% endif %}
-            >
-              Name A-Z
-            </option>
-
-            <option
-              value="name_desc"
-              {% if sort == "name_desc" %}selected{% endif %}
-            >
-              Name Z-A
-            </option>
-
-          </select>
-
-        </form>
-
-
-        <!-- Students Table -->
-        {% if students %}
-
-        <div style="overflow-x: auto">
-
-          <table style="width: 100%; border-collapse: collapse">
-
-            <thead>
-
-              <tr>
-
-                <th style="padding: 12px; text-align: left">
-                  ID
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Name
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Roll
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Age
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Attendance
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Study Hours
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Total
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Percentage
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Grade
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Result
-                </th>
-
-                <th style="padding: 12px; text-align: left">
-                  Action
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-              {% for student in students %}
-
-              <tr>
-
-                <td style="padding: 12px">
-                  {{ student.id }}
-                </td>
-
-                <td style="padding: 12px">
-                  {{ student.name }}
-                </td>
-
-                <td style="padding: 12px">
-                  {{ student.roll }}
-                </td>
-
-                <td style="padding: 12px">
-                  {{ student.age }}
-                </td>
-
-                <td style="padding: 12px">
-                  {{ "%.1f"|format(student.attendance) }}%
-                </td>
-
-                <td style="padding: 12px">
-                  {{ "%.1f"|format(student.study_hours) }}
-                </td>
-
-                <td style="padding: 12px">
-                  {{ "%.1f"|format(student.total) }}
-                </td>
-
-                <td style="padding: 12px">
-                  {{ "%.2f"|format(student.percentage) }}%
-                </td>
-
-                <td style="padding: 12px">
-                  {{ student.grade }}
-                </td>
-
-                <td style="padding: 12px">
-                  {{ student.result }}
-                </td>
-
-
-                <!-- Actions -->
-                <td style="padding: 12px">
-
-                  <!-- View -->
-                  <a
-                    href="{{ url_for('student_details', student_id=student.id) }}"
-                    class="secondary-btn"
-                  >
-                    View
-                  </a>
-
-
-                  <!-- Edit -->
-                  <a
-                    href="{{ url_for('edit_student', student_id=student.id) }}"
-                    class="submit-btn"
-                  >
-                    Edit
-                  </a>
-
-
-                  <!-- Delete -->
-                  <form
-                    action="{{ url_for('delete_student', student_id=student.id) }}"
-                    method="POST"
-                    style="display: inline"
-                    onsubmit="return confirm('Are you sure you want to delete this student?');"
-                  >
-
-                    <button
-                      type="submit"
-                      class="delete-btn"
-                    >
-                      Delete
-                    </button>
-
-                  </form>
-
-                </td>
-
-              </tr>
-
-              {% endfor %}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-
-        <!-- Pagination -->
-        {% if total_pages > 1 %}
-
-        <div class="result-actions">
-
-          <!-- Previous -->
-          {% if page > 1 %}
-
-          <a
-            href="{{ url_for(
-              'students',
-              page=page-1,
-              search=search,
-              sort=sort
-            ) }}"
-            class="secondary-btn"
-          >
-            ← Previous
-          </a>
-
-          {% endif %}
-
-
-          <!-- Current page -->
-          <span style="padding: 14px 20px">
-            Page {{ page }} of {{ total_pages }}
-          </span>
-
-
-          <!-- Next -->
-          {% if page < total_pages %}
-
-          <a
-            href="{{ url_for(
-              'students',
-              page=page+1,
-              search=search,
-              sort=sort
-            ) }}"
-            class="secondary-btn"
-          >
-            Next →
-          </a>
-
-          {% endif %}
-
-        </div>
-
-        {% endif %}
-
-
-        {% else %}
-
-        <!-- No students -->
-        <p>
-          No students found.
-        </p>
-
-        {% endif %}
-
-
-        <!-- Bottom Actions -->
-        <div class="result-actions">
-
-          <a
-            href="{{ url_for('add_student') }}"
-            class="submit-btn"
-          >
-            Add Student
-          </a>
-
-          <a
-            href="{{ url_for('home') }}"
-            class="secondary-btn"
-          >
-            Dashboard
-          </a>
-
-        </div>
-
-      </div>
-
-    </section>
-
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students - Student Performance Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% set active_page = 'students' %}
+    {% include '_sidebar.html' %}
+
+    <main class="main-content">
+        <header class="top-header">
+            <div>
+                <p class="eyebrow">STUDENT DIRECTORY</p>
+                <h1>Students</h1>
+                <p>Search, review, and manage student records.</p>
+            </div>
+            <a class="button button-primary" href="{{ url_for('add_student') }}">＋ Add Student</a>
+        </header>
+
+        <section class="panel directory-panel" aria-labelledby="directory-title">
+            <div class="directory-toolbar">
+                <form class="search-form" method="get" action="{{ url_for('students') }}" role="search">
+                    <label class="sr-only" for="student-search">Search by name or roll number</label>
+                    <input id="student-search" type="search" name="search" value="{{ search }}" placeholder="Search by name or roll number" autocomplete="off">
+                    <input type="hidden" name="sort" value="{{ sort }}">
+                    <button class="button button-primary" type="submit">Search</button>
+                    {% if search %}<a class="button button-secondary" href="{{ url_for('students', sort=sort) }}">Clear</a>{% endif %}
+                </form>
+
+                <form class="sort-form" method="get" action="{{ url_for('students') }}">
+                    <input type="hidden" name="search" value="{{ search }}">
+                    <label for="sort">Sort by</label>
+                    <select name="sort" id="sort" onchange="this.form.submit()">
+                        <option value="latest" {% if sort == 'latest' %}selected{% endif %}>Recently added</option>
+                        <option value="highest" {% if sort == 'highest' %}selected{% endif %}>Highest percentage</option>
+                        <option value="lowest" {% if sort == 'lowest' %}selected{% endif %}>Lowest percentage</option>
+                        <option value="name_asc" {% if sort == 'name_asc' %}selected{% endif %}>Name A–Z</option>
+                        <option value="name_desc" {% if sort == 'name_desc' %}selected{% endif %}>Name Z–A</option>
+                    </select>
+                </form>
+            </div>
+
+            {% if students %}
+                <div class="directory-summary" id="directory-title">
+                    Showing {{ students|length }} of {{ total_students }} student{% if total_students != 1 %}s{% endif %}
+                    {% if search %} for “{{ search }}”{% endif %}
+                </div>
+                <div class="table-scroll" role="region" aria-label="Student records" tabindex="0">
+                    <table class="data-table students-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Student</th>
+                                <th scope="col">Roll number</th>
+                                <th scope="col">Attendance</th>
+                                <th scope="col">Study hours</th>
+                                <th scope="col">Percentage</th>
+                                <th scope="col">Grade</th>
+                                <th scope="col">Result</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr>
+                                <td data-label="Student"><strong>{{ student.name }}</strong><small>{{ student.email }}</small></td>
+                                <td data-label="Roll number">{{ student.roll }}</td>
+                                <td data-label="Attendance">{{ "%.1f"|format(student.attendance) }}%</td>
+                                <td data-label="Study hours">{{ "%.1f"|format(student.study_hours) }} h</td>
+                                <td data-label="Percentage"><strong>{{ "%.2f"|format(student.percentage) }}%</strong></td>
+                                <td data-label="Grade"><span class="grade-pill">{{ student.grade }}</span></td>
+                                <td data-label="Result"><span class="status-pill {% if student.result == 'Pass' %}status-pass{% else %}status-fail{% endif %}">{{ student.result }}</span></td>
+                                <td data-label="Actions">
+                                    <div class="table-actions">
+                                        <a class="button button-small button-secondary" href="{{ url_for('student_details', student_id=student.id) }}">View</a>
+                                        <a class="button button-small button-secondary" href="{{ url_for('edit_student', student_id=student.id) }}">Edit</a>
+                                        <form action="{{ url_for('delete_student', student_id=student.id) }}" method="post" onsubmit="return confirm('Delete this student record?');">
+                                            <button class="button button-small button-danger" type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if total_pages > 1 %}
+                <nav class="pagination" aria-label="Student list pages">
+                    {% if page > 1 %}<a class="button button-secondary" href="{{ url_for('students', page=page-1, search=search, sort=sort) }}">← Previous</a>{% else %}<span class="button button-secondary is-disabled">← Previous</span>{% endif %}
+                    <span class="pagination-status">Page <strong>{{ page }}</strong> of {{ total_pages }}</span>
+                    {% if page < total_pages %}<a class="button button-secondary" href="{{ url_for('students', page=page+1, search=search, sort=sort) }}">Next →</a>{% else %}<span class="button button-secondary is-disabled">Next →</span>{% endif %}
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="empty-state">
+                    <span class="empty-state-icon">▤</span>
+                    <h2>{% if search %}No matching students{% else %}No students yet{% endif %}</h2>
+                    <p>{% if search %}Try a different name or roll number.{% else %}Add a student to start building your class dashboard.{% endif %}</p>
+                    {% if search %}<a class="button button-secondary" href="{{ url_for('students') }}">Clear search</a>{% else %}<a class="button button-primary" href="{{ url_for('add_student') }}">Add first student</a>{% endif %}
+                </div>
+            {% endif %}
+        </section>
+    </main>
+</body>
 </html>
-```

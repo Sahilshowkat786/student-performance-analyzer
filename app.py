@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import math
+import re
 import sqlite3
 
 from ml_model import FEATURE_COLUMNS, MINIMUM_TRAINING_SAMPLES, train_linear_regression
@@ -18,6 +19,92 @@ def get_db_connection():
     connection = sqlite3.connect(DATABASE)
     connection.row_factory = sqlite3.Row
     return connection
+
+
+def validate_student_form(form):
+    """Return converted student values and clear form validation errors."""
+    text_fields = ("name", "roll", "email")
+    score_fields = ("attendance", "assignment", "previous_marks", "python", "dsa", "dbms", "web")
+    numeric_fields = ("age", "study_hours", *score_fields)
+    values = {field: form.get(field, "").strip() for field in text_fields}
+    errors = []
+
+    for field, label in (("name", "Student name"), ("roll", "Roll number"), ("email", "Email")):
+        if not values[field]:
+            errors.append(f"{label} is required.")
+
+    if values["email"] and not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", values["email"]):
+        errors.append("Enter a valid email address.")
+
+    for field in numeric_fields:
+        raw_value = form.get(field, "").strip()
+        if not raw_value:
+            errors.append(f"{field.replace('_', ' ').title()} is required.")
+            continue
+
+        try:
+            value = int(raw_value) if field == "age" else float(raw_value)
+        except ValueError:
+            errors.append(f"{field.replace('_', ' ').title()} must be a valid number.")
+            continue
+
+        if not math.isfinite(value):
+            errors.append(f"{field.replace('_', ' ').title()} must be a finite number.")
+            continue
+
+        values[field] = value
+
+        if field == "age" and not 10 <= value <= 100:
+            errors.append("Age must be between 10 and 100.")
+        elif field == "study_hours" and not 0 <= value <= 24:
+            errors.append("Study hours must be between 0 and 24 per day.")
+        elif field in score_fields and not 0 <= value <= 100:
+            errors.append(f"{field.replace('_', ' ').title()} must be between 0 and 100.")
+
+    return values, errors
+
+
+def calculate_performance(marks):
+    """Calculate derived results consistently from the four subject marks."""
+    total = sum(marks.values())
+    average = total / len(marks)
+    percentage = (total / (len(marks) * 100)) * 100
+
+    if percentage >= 90:
+        grade = "A+"
+    elif percentage >= 80:
+        grade = "A"
+    elif percentage >= 70:
+        grade = "B"
+    elif percentage >= 60:
+        grade = "C"
+    elif percentage >= 50:
+        grade = "D"
+    else:
+        grade = "F"
+
+    result = "Pass" if percentage >= 40 else "Fail"
+    return total, average, percentage, grade, result
+
+
+@app.errorhandler(404)
+def page_not_found(_error):
+    return render_template(
+        "error.html",
+        error_code=404,
+        error_title="Page not found",
+        error_message="The page or student record you requested could not be found."
+    ), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(_error):
+    return render_template(
+        "error.html",
+        error_code=500,
+        error_title="Something went wrong",
+        error_message="We could not complete that request. Please try again."
+    ), 500
 
 
 # =========================================================
@@ -76,6 +163,13 @@ def home():
         FROM students
         ORDER BY id DESC
     """).fetchall()
+
+    top_performer = connection.execute("""
+        SELECT id, name, percentage
+        FROM students
+        ORDER BY percentage DESC, id ASC
+        LIMIT 1
+    """).fetchone()
 
     # -----------------------------------------------------
     # CALCULATE SUBJECT AVERAGES
@@ -172,6 +266,7 @@ def home():
     return render_template(
         "index.html",
         students=students,
+        top_performer=top_performer,
         chart_data=chart_data,
         grade_labels=grade_labels,
         grade_data=grade_data,
@@ -594,7 +689,7 @@ def student_details(student_id):
     connection.close()
 
     if student is None:
-        return "Student not found", 404
+        return page_not_found(None)
 
     return render_template(
         "student_details.html",
@@ -627,58 +722,35 @@ def edit_student(student_id):
 
         connection.close()
 
-        return "Student not found", 404
+        return page_not_found(None)
 
     # -----------------------------------------------------
     # UPDATE STUDENT
     # -----------------------------------------------------
 
     if request.method == "POST":
+        values, errors = validate_student_form(request.form)
+        if errors:
+            connection.close()
+            return render_template(
+                "edit_student.html",
+                student=student,
+                form_values=request.form.to_dict(),
+                errors=errors
+            ), 400
 
-        name = request.form["name"]
-        roll = request.form["roll"]
-        email = request.form["email"]
-
-        age = int(
-            request.form["age"]
-        )
-
-        attendance = float(
-            request.form["attendance"]
-        )
-
-        study_hours = float(
-            request.form["study_hours"]
-        )
-
-        assignment = float(
-            request.form["assignment"]
-        )
-
-        previous_marks = float(
-            request.form["previous_marks"]
-        )
-
-        python = float(
-            request.form["python"]
-        )
-
-        dsa = float(
-            request.form["dsa"]
-        )
-
-        dbms = float(
-            request.form["dbms"]
-        )
-
-        web = float(
-            request.form["web"]
-        )
-
-        # -------------------------------------------------
-        # MARKS
-        # -------------------------------------------------
-
+        name = values["name"]
+        roll = values["roll"]
+        email = values["email"]
+        age = values["age"]
+        attendance = values["attendance"]
+        study_hours = values["study_hours"]
+        assignment = values["assignment"]
+        previous_marks = values["previous_marks"]
+        python = values["python"]
+        dsa = values["dsa"]
+        dbms = values["dbms"]
+        web = values["web"]
         marks = {
             "Python": python,
             "DSA": dsa,
@@ -690,47 +762,7 @@ def edit_student(student_id):
         # CALCULATIONS
         # -------------------------------------------------
 
-        total = sum(
-            marks.values()
-        )
-
-        average = total / len(marks)
-
-        percentage = (
-            total / 400
-        ) * 100
-
-        # -------------------------------------------------
-        # GRADE
-        # -------------------------------------------------
-
-        if percentage >= 90:
-            grade = "A+"
-
-        elif percentage >= 80:
-            grade = "A"
-
-        elif percentage >= 70:
-            grade = "B"
-
-        elif percentage >= 60:
-            grade = "C"
-
-        elif percentage >= 50:
-            grade = "D"
-
-        else:
-            grade = "F"
-
-        # -------------------------------------------------
-        # RESULT
-        # -------------------------------------------------
-
-        result = (
-            "Pass"
-            if percentage >= 40
-            else "Fail"
-        )
+        total, average, percentage, grade, result = calculate_performance(marks)
 
         # -------------------------------------------------
         # UPDATE DATABASE
@@ -804,7 +836,9 @@ def edit_student(student_id):
 
     return render_template(
         "edit_student.html",
-        student=student
+        student=student,
+        form_values={},
+        errors=[]
     )
 
 
@@ -833,7 +867,7 @@ def delete_student(student_id):
 
         connection.close()
 
-        return "Student not found", 404
+        return page_not_found(None)
 
     connection.execute(
         """
@@ -862,53 +896,26 @@ def delete_student(student_id):
 def add_student():
 
     if request.method == "POST":
+        values, errors = validate_student_form(request.form)
+        if errors:
+            return render_template(
+                "add_student.html",
+                form_values=request.form.to_dict(),
+                errors=errors
+            ), 400
 
-        name = request.form["name"]
-
-        roll = request.form["roll"]
-
-        email = request.form["email"]
-
-        age = int(
-            request.form["age"]
-        )
-
-        attendance = float(
-            request.form["attendance"]
-        )
-
-        study_hours = float(
-            request.form["study_hours"]
-        )
-
-        assignment = float(
-            request.form["assignment"]
-        )
-
-        previous_marks = float(
-            request.form["previous_marks"]
-        )
-
-        python = float(
-            request.form["python"]
-        )
-
-        dsa = float(
-            request.form["dsa"]
-        )
-
-        dbms = float(
-            request.form["dbms"]
-        )
-
-        web = float(
-            request.form["web"]
-        )
-
-        # -------------------------------------------------
-        # MARKS
-        # -------------------------------------------------
-
+        name = values["name"]
+        roll = values["roll"]
+        email = values["email"]
+        age = values["age"]
+        attendance = values["attendance"]
+        study_hours = values["study_hours"]
+        assignment = values["assignment"]
+        previous_marks = values["previous_marks"]
+        python = values["python"]
+        dsa = values["dsa"]
+        dbms = values["dbms"]
+        web = values["web"]
         marks = {
             "Python": python,
             "DSA": dsa,
@@ -920,47 +927,7 @@ def add_student():
         # CALCULATIONS
         # -------------------------------------------------
 
-        total = sum(
-            marks.values()
-        )
-
-        average = total / len(marks)
-
-        percentage = (
-            total / 400
-        ) * 100
-
-        # -------------------------------------------------
-        # GRADE
-        # -------------------------------------------------
-
-        if percentage >= 90:
-            grade = "A+"
-
-        elif percentage >= 80:
-            grade = "A"
-
-        elif percentage >= 70:
-            grade = "B"
-
-        elif percentage >= 60:
-            grade = "C"
-
-        elif percentage >= 50:
-            grade = "D"
-
-        else:
-            grade = "F"
-
-        # -------------------------------------------------
-        # RESULT
-        # -------------------------------------------------
-
-        result = (
-            "Pass"
-            if percentage >= 40
-            else "Fail"
-        )
+        total, average, percentage, grade, result = calculate_performance(marks)
 
         # -------------------------------------------------
         # HIGHEST / LOWEST SUBJECT
@@ -1059,7 +1026,9 @@ def add_student():
         )
 
     return render_template(
-        "add_student.html"
+        "add_student.html",
+        form_values={},
+        errors=[]
     )
 
 
@@ -1072,5 +1041,5 @@ if __name__ == "__main__":
     create_database()
 
     app.run(
-        debug=True
+        debug=False
     )

@@ -1,336 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>{{ student.name }} - Student Details</title>
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <title>{{ student.name }} - Student Performance Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
-
-
 <body>
+    {% set active_page = 'students' %}
+    {% include '_sidebar.html' %}
+    <main class="main-content">
+        <header class="top-header">
+            <div><p class="eyebrow">STUDENT PROFILE</p><h1>{{ student.name }}</h1><p>Roll {{ student.roll }} · {{ student.email }}</p></div>
+            <a class="button button-primary" href="{{ url_for('edit_student', student_id=student.id) }}">Edit student</a>
+        </header>
 
-    <nav class="topbar">
+        <section class="panel profile-panel" aria-labelledby="profile-title">
+            <div class="section-heading"><div><h2 id="profile-title">Student Information</h2><p>Personal and academic indicators</p></div></div>
+            <dl class="profile-grid">
+                <div><dt>Roll number</dt><dd>{{ student.roll }}</dd></div>
+                <div><dt>Email address</dt><dd>{{ student.email }}</dd></div>
+                <div><dt>Age</dt><dd>{{ student.age }}</dd></div>
+                <div><dt>Attendance</dt><dd>{{ "%.1f"|format(student.attendance) }}%</dd></div>
+                <div><dt>Study hours per day</dt><dd>{{ "%.1f"|format(student.study_hours) }} h</dd></div>
+                <div><dt>Assignment score</dt><dd>{{ "%.1f"|format(student.assignment) }}%</dd></div>
+                <div><dt>Previous marks</dt><dd>{{ "%.1f"|format(student.previous_marks) }}%</dd></div>
+            </dl>
+        </section>
 
-        <h2>Student Performance Analyzer</h2>
-
-        <div>
-
-            <a href="{{ url_for('home') }}">
-                Dashboard
-            </a>
-
-            <a href="{{ url_for('students') }}">
-                Students
-            </a>
-
-            <a href="{{ url_for('add_student') }}">
-                Add Student
-            </a>
-
-            <a href="{{ url_for('analytics') }}">
-                Analytics
-            </a>
-
-        </div>
-
-    </nav>
-
-
-    <section class="result-section">
-
-        <div class="result-container">
-
-            <h1>{{ student.name }}</h1>
-
-            <p class="result-description">
-                Complete student performance details
-            </p>
-
-
-            <!-- Individual Analytics -->
-
-            <section class="panel student-analytics-panel">
-
-                <div class="panel-header">
-
-                    <div>
-                        <h2>{{ student.name }} - Individual Analytics</h2>
-                        <p>Subject marks and academic indicators for this student.</p>
-                    </div>
-
-                </div>
-
-                <div class="analytics-chart">
-                    <canvas id="studentPerformanceChart"
-                            aria-label="Subject performance chart for {{ student.name }}"
-                            role="img"></canvas>
-                </div>
-
-                <div id="studentAnalyticsData"
-                     data-marks='{{ [student.python, student.dsa, student.dbms, student.web] | tojson }}'></div>
-
-            </section>
-
-
-            <section class="panel student-analytics-panel">
-
-                <div class="panel-header">
-
-                    <div>
-                        <h2>{{ student.name }} - Academic Overview</h2>
-                        <p>Attendance, study habits, and performance indicators.</p>
-                    </div>
-
-                </div>
-
-                <div class="student-metrics-grid">
-
-                    <div class="result-card">
-                        <h3>Attendance</h3>
-                        <p>{{ "%.1f"|format(student.attendance) }}%</p>
-                    </div>
-
-                    <div class="result-card">
-                        <h3>Study Hours</h3>
-                        <p>{{ "%.1f"|format(student.study_hours) }}</p>
-                    </div>
-
-                    <div class="result-card">
-                        <h3>Assignment Score</h3>
-                        <p>{{ "%.1f"|format(student.assignment) }}%</p>
-                    </div>
-
-                    <div class="result-card">
-                        <h3>Previous Marks</h3>
-                        <p>{{ "%.1f"|format(student.previous_marks) }}%</p>
-                    </div>
-
-                    <div class="result-card">
-                        <h3>Current Percentage</h3>
-                        <p>{{ "%.2f"|format(student.percentage) }}%</p>
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- Personal Information -->
-
-            <div class="subject-section">
-
-                <h2>Personal Information</h2>
-
-                <div class="subject-row">
-                    <span class="subject-name">Student ID</span>
-                    <span class="subject-mark">
-                        {{ student.id }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">Name</span>
-                    <span class="subject-mark">
-                        {{ student.name }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">Roll Number</span>
-                    <span class="subject-mark">
-                        {{ student.roll }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">Email</span>
-                    <span class="subject-mark">
-                        {{ student.email }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">Age</span>
-                    <span class="subject-mark">
-                        {{ student.age }}
-                    </span>
-                </div>
-
+        <section class="analytics-section" aria-labelledby="summary-title">
+            <div class="section-heading"><div><h2 id="summary-title">Performance Summary</h2><p>Calculated from four subject marks</p></div></div>
+            <div class="metrics-grid">
+                <article class="metric-card"><span>Total marks</span><strong>{{ "%.1f"|format(student.total) }}<small> / 400</small></strong></article>
+                <article class="metric-card"><span>Average</span><strong>{{ "%.2f"|format(student.average) }}<small> / 100</small></strong></article>
+                <article class="metric-card metric-card-primary"><span>Current percentage</span><strong>{{ "%.2f"|format(student.percentage) }}%</strong></article>
+                <article class="metric-card"><span>Grade</span><strong>{{ student.grade }}</strong></article>
+                <article class="metric-card"><span>Result</span><strong><span class="status-pill {% if student.result == 'Pass' %}status-pass{% else %}status-fail{% endif %}">{{ student.result }}</span></strong></article>
             </div>
+        </section>
 
-
-            <!-- Academic Information -->
-
-            <div class="subject-section">
-
-                <h2>Academic Information</h2>
-
-                <div class="subject-row">
-                    <span class="subject-name">Attendance</span>
-                    <span class="subject-mark">
-                        {{ "%.1f"|format(student.attendance) }}%
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">Study Hours</span>
-                    <span class="subject-mark">
-                        {{ "%.1f"|format(student.study_hours) }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">Assignment</span>
-                    <span class="subject-mark">
-                        {{ "%.1f"|format(student.assignment) }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">Previous Marks</span>
-                    <span class="subject-mark">
-                        {{ "%.1f"|format(student.previous_marks) }}
-                    </span>
-                </div>
-
+        <section class="panel content-section" aria-labelledby="marks-title">
+            <div class="section-heading"><div><h2 id="marks-title">Subject Marks</h2><p>Marks recorded for each subject</p></div></div>
+            <div class="subject-marks-grid">
+                <div><span>Python</span><strong>{{ "%.1f"|format(student.python) }}%</strong></div>
+                <div><span>Data Structures &amp; Algorithms</span><strong>{{ "%.1f"|format(student.dsa) }}%</strong></div>
+                <div><span>Database Management Systems</span><strong>{{ "%.1f"|format(student.dbms) }}%</strong></div>
+                <div><span>Web Development</span><strong>{{ "%.1f"|format(student.web) }}%</strong></div>
             </div>
+        </section>
 
+        <section class="panel content-section" aria-labelledby="individual-analytics-title">
+            <div class="section-heading"><div><h2 id="individual-analytics-title">Individual Analytics</h2><p>Subject performance for {{ student.name }}</p></div></div>
+            <div class="analytics-chart analytics-chart-compact"><canvas id="studentPerformanceChart" aria-label="Subject performance chart for {{ student.name }}" role="img"></canvas></div>
+            <div id="studentAnalyticsData" data-marks='{{ [student.python, student.dsa, student.dbms, student.web] | tojson }}' hidden></div>
+        </section>
 
-            <!-- Subject Marks -->
-
-            <div class="subject-section">
-
-                <h2>Subject Marks</h2>
-
-                <div class="subject-row">
-                    <span class="subject-name">Python</span>
-                    <span class="subject-mark">
-                        {{ "%.1f"|format(student.python) }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">DSA</span>
-                    <span class="subject-mark">
-                        {{ "%.1f"|format(student.dsa) }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">DBMS</span>
-                    <span class="subject-mark">
-                        {{ "%.1f"|format(student.dbms) }}
-                    </span>
-                </div>
-
-                <div class="subject-row">
-                    <span class="subject-name">Web Development</span>
-                    <span class="subject-mark">
-                        {{ "%.1f"|format(student.web) }}
-                    </span>
-                </div>
-
-            </div>
-
-
-            <!-- Performance -->
-
-            <div class="result-cards">
-
-                <div class="result-card">
-
-                    <h3>Total</h3>
-
-                    <p>
-                        {{ "%.1f"|format(student.total) }}/400
-                    </p>
-
-                </div>
-
-
-                <div class="result-card">
-
-                    <h3>Average</h3>
-
-                    <p>
-                        {{ "%.2f"|format(student.average) }}
-                    </p>
-
-                </div>
-
-
-                <div class="result-card">
-
-                    <h3>Percentage</h3>
-
-                    <p>
-                        {{ "%.2f"|format(student.percentage) }}%
-                    </p>
-
-                </div>
-
-
-                <div class="result-card">
-
-                    <h3>Grade</h3>
-
-                    <p>
-                        {{ student.grade }}
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- Result -->
-
-            <div class="performance-result">
-
-                <h2>Final Result</h2>
-
-                <p>
-                    {{ student.result }}
-                </p>
-
-            </div>
-
-
-            <!-- Actions -->
-
-            <div class="result-actions">
-
-                <a href="{{ url_for('students') }}"
-                   class="secondary-btn">
-
-                    Back to Students
-
-                </a>
-
-
-                <a href="{{ url_for('add_student') }}"
-                   class="submit-btn">
-
-                    Add Student
-
-                </a>
-
-            </div>
-
-        </div>
-
-    </section>
-
-<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-
+        <section class="form-actions page-actions" aria-label="Student actions">
+            <a class="button button-secondary" href="{{ url_for('students') }}">Back to Students</a>
+            <a class="button button-primary" href="{{ url_for('edit_student', student_id=student.id) }}">Edit Student</a>
+            <form action="{{ url_for('delete_student', student_id=student.id) }}" method="post" onsubmit="return confirm('Delete this student record?');"><button class="button button-danger" type="submit">Delete Student</button></form>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
-
 </html>

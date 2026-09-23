@@ -14,19 +14,8 @@
 
 <body>
 
-    <aside class="sidebar">
-        <div class="logo">
-            <h2>Student Analyzer</h2>
-        </div>
-
-        <nav>
-            <a href="{{ url_for('home') }}">Dashboard</a>
-            <a href="{{ url_for('students') }}">Students</a>
-            <a href="{{ url_for('add_student') }}">Add Student</a>
-            <a href="{{ url_for('analytics') }}" class="active">Analytics</a>
-            <a href="{{ url_for('prediction') }}">ML Prediction</a>
-        </nav>
-    </aside>
+    {% set active_page = 'analytics' %}
+    {% include '_sidebar.html' %}
 
     <main class="main-content">
         <header class="top-header">

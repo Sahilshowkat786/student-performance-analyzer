@@ -1,285 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Add Student - Student Performance Analyzer</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
-
-    <nav>
-        <h2>Student Analyzer</h2>
-
-        <div>
-            <a href="/">Home</a>
-            <a href="/add-student">Add Student</a>
-            <a href="#">Students</a>
-            <a href="{{ url_for('analytics') }}">Analytics</a>
-            <a href="{{ url_for('prediction') }}">ML Prediction</a>
-        </div>
-    </nav>
-
-
-    <main>
+    {% set active_page = 'add_student' %}
+    {% include '_sidebar.html' %}
+    <main class="main-content">
+        <header class="top-header">
+            <div><p class="eyebrow">STUDENT RECORDS</p><h1>Add Student</h1><p>Enter student information and assessment marks.</p></div>
+        </header>
 
         <section class="form-section">
-
             <div class="form-container">
+                {% if errors %}
+                <div class="form-alert" role="alert" aria-live="assertive">
+                    <strong>Please correct the following:</strong>
+                    <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                </div>
+                {% endif %}
 
-                <h1>Add Student</h1>
-
-                <p class="form-description">
-                    Enter the student's academic information below.
-                </p>
-
-
-                <!-- POST FORM -->
-                <form method="POST">
-
-
-                    <!-- STUDENT INFORMATION -->
-
-                    <div class="form-group">
-
-                        <label for="name">Student Name</label>
-
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            placeholder="Enter student name"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="roll">Roll Number</label>
-
-                        <input
-                            type="text"
-                            id="roll"
-                            name="roll"
-                            placeholder="Enter roll number"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="email">Email</label>
-
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            placeholder="Enter email"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="age">Age</label>
-
-                            <input
-                                type="number"
-                                id="age"
-                                name="age"
-                                min="10"
-                                max="100"
-                                placeholder="Age"
-                                required
-                            >
-
+                <form method="post" action="{{ url_for('add_student') }}" novalidate>
+                    <section class="form-block">
+                        <h2>Student Information</h2>
+                        <p class="form-block-description">Basic details used to identify the student.</p>
+                        <div class="form-grid">
+                            <div class="form-group"><label for="name">Student name</label><input id="name" name="name" type="text" autocomplete="name" value="{{ form_values.get('name', '') }}" required></div>
+                            <div class="form-group"><label for="roll">Roll number</label><input id="roll" name="roll" type="text" value="{{ form_values.get('roll', '') }}" required></div>
+                            <div class="form-group"><label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" value="{{ form_values.get('email', '') }}" required></div>
+                            <div class="form-group"><label for="age">Age</label><input id="age" name="age" type="number" min="10" max="100" step="1" value="{{ form_values.get('age', '') }}" required></div>
                         </div>
+                    </section>
 
-
-                        <div class="form-group">
-
-                            <label for="attendance">Attendance (%)</label>
-
-                            <input
-                                type="number"
-                                id="attendance"
-                                name="attendance"
-                                min="0"
-                                max="100"
-                                placeholder="Attendance"
-                                required
-                            >
-
+                    <section class="form-block">
+                        <h2>Academic Information</h2>
+                        <p class="form-block-description">Enter current study indicators and previous performance.</p>
+                        <div class="form-grid">
+                            <div class="form-group"><label for="attendance">Attendance (%)</label><input id="attendance" name="attendance" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('attendance', '') }}" required></div>
+                            <div class="form-group"><label for="study_hours">Study hours per day</label><input id="study_hours" name="study_hours" type="number" min="0" max="24" step="0.1" value="{{ form_values.get('study_hours', '') }}" required></div>
+                            <div class="form-group"><label for="assignment">Assignment score (%)</label><input id="assignment" name="assignment" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('assignment', '') }}" required></div>
+                            <div class="form-group"><label for="previous_marks">Previous marks (%)</label><input id="previous_marks" name="previous_marks" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('previous_marks', '') }}" required></div>
                         </div>
+                    </section>
 
+                    <section class="form-block">
+                        <h2>Subject Marks</h2>
+                        <p class="form-block-description">Marks for each subject, from 0 to 100.</p>
+                        <div class="form-grid">
+                            <div class="form-group"><label for="python">Python</label><input id="python" name="python" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('python', '') }}" required></div>
+                            <div class="form-group"><label for="dsa">Data Structures &amp; Algorithms</label><input id="dsa" name="dsa" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('dsa', '') }}" required></div>
+                            <div class="form-group"><label for="dbms">Database Management Systems</label><input id="dbms" name="dbms" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('dbms', '') }}" required></div>
+                            <div class="form-group"><label for="web">Web Development</label><input id="web" name="web" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('web', '') }}" required></div>
+                        </div>
+                    </section>
+
+                    <div class="form-actions">
+                        <button class="button button-primary" type="submit">Calculate Performance</button>
+                        <a class="button button-secondary" href="{{ url_for('students') }}">Cancel</a>
                     </div>
-
-
-                    <!-- STUDY INFORMATION -->
-
-                    <div class="form-group">
-
-                        <label for="study_hours">Study Hours / Day</label>
-
-                        <input
-                            type="number"
-                            id="study_hours"
-                            name="study_hours"
-                            min="0"
-                            max="24"
-                            step="0.5"
-                            placeholder="Example: 3.5"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="assignment">Assignment Score (%)</label>
-
-                            <input
-                                type="number"
-                                id="assignment"
-                                name="assignment"
-                                min="0"
-                                max="100"
-                                placeholder="Score"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="previous_marks">Previous Marks (%)</label>
-
-                            <input
-                                type="number"
-                                id="previous_marks"
-                                name="previous_marks"
-                                min="0"
-                                max="100"
-                                placeholder="Previous marks"
-                                required
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- SUBJECT MARKS -->
-
-                    <h2>Subject Marks</h2>
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="python">Python</label>
-
-                            <input
-                                type="number"
-                                id="python"
-                                name="python"
-                                min="0"
-                                max="100"
-                                placeholder="Python marks"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="dsa">DSA</label>
-
-                            <input
-                                type="number"
-                                id="dsa"
-                                name="dsa"
-                                min="0"
-                                max="100"
-                                placeholder="DSA marks"
-                                required
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-
-                            <label for="dbms">DBMS</label>
-
-                            <input
-                                type="number"
-                                id="dbms"
-                                name="dbms"
-                                min="0"
-                                max="100"
-                                placeholder="DBMS marks"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label for="web">Web Development</label>
-
-                            <input
-                                type="number"
-                                id="web"
-                                name="web"
-                                min="0"
-                                max="100"
-                                placeholder="Web Development marks"
-                                required
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- SUBMIT -->
-
-                    <button type="submit" class="submit-btn">
-                        Analyze Performance
-                    </button>
-
-
                 </form>
-
             </div>
-
         </section>
-
     </main>
-
 </body>
-
 </html>

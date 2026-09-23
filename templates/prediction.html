@@ -7,16 +7,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="logo"><h2>Student Analyzer</h2></div>
-        <nav>
-            <a href="{{ url_for('home') }}">Dashboard</a>
-            <a href="{{ url_for('students') }}">Students</a>
-            <a href="{{ url_for('add_student') }}">Add Student</a>
-            <a href="{{ url_for('analytics') }}">Analytics</a>
-            <a href="{{ url_for('prediction') }}" class="active">ML Prediction</a>
-        </nav>
-    </aside>
+    {% set active_page = 'prediction' %}
+    {% include '_sidebar.html' %}
 
     <main class="main-content">
         <header class="top-header">

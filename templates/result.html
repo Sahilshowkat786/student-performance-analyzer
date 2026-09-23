@@ -1,187 +1,48 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Performance Result - Student Analyzer</title>
-
+    <title>Performance Result - Student Performance Analyzer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
-
-    <!-- Navigation -->
-
-    <nav>
-
-        <h2>Student Analyzer</h2>
-
-        <div>
-            <a href="/">Home</a>
-            <a href="/add-student">Add Student</a>
-            <a href="#">Students</a>
-            <a href="{{ url_for('analytics') }}">Analytics</a>
-            <a href="{{ url_for('prediction') }}">ML Prediction</a>
-        </div>
-
-    </nav>
-
-
-    <main>
-
-        <section class="result-section">
-
-            <div class="result-container">
-
-                <!-- Heading -->
-
-                <h1>Performance Analysis</h1>
-
-                <p class="result-description">
-                    Performance report for <strong>{{ name }}</strong>
-                </p>
-
-
-                <!-- Summary Cards -->
-
-                <div class="result-cards">
-
-                    <div class="result-card">
-
-                        <h3>Total Marks</h3>
-
-                        <p>
-                            {{ total }} / 400
-                        </p>
-
-                    </div>
-
-
-                    <div class="result-card">
-
-                        <h3>Average</h3>
-
-                        <p>
-                            {{ "%.2f"|format(average) }}
-                        </p>
-
-                    </div>
-
-
-                    <div class="result-card">
-
-                        <h3>Percentage</h3>
-
-                        <p>
-                            {{ "%.2f"|format(percentage) }}%
-                        </p>
-
-                    </div>
-
-
-                    <div class="result-card">
-
-                        <h3>Grade</h3>
-
-                        <p>
-                            {{ grade }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Result -->
-
-                <div class="performance-result">
-
-                    <h2>Result</h2>
-
-                    <p>
-                        {{ result }}
-                    </p>
-
-                </div>
-
-
-                <!-- Subject Performance -->
-
-                <div class="subject-section">
-
-                    <h2>Subject Performance</h2>
-
-                    {% for subject, mark in marks.items() %}
-
-                    <div class="subject-row">
-
-                        <div class="subject-name">
-                            {{ subject }}
-                        </div>
-
-                        <div class="subject-mark">
-                            {{ mark }}
-                        </div>
-
-                    </div>
-
-                    {% endfor %}
-
-                </div>
-
-
-                <!-- Best and Weakest Subject -->
-
-                <div class="subject-analysis">
-
-                    <div>
-
-                        <h3>Highest Performing Subject</h3>
-
-                        <p>
-                            {{ highest_subject }}
-                        </p>
-
-                    </div>
-
-
-                    <div>
-
-                        <h3>Lowest Performing Subject</h3>
-
-                        <p>
-                            {{ lowest_subject }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-
-                <!-- Actions -->
-
-                <div class="result-actions">
-
-                    <a href="/add-student" class="submit-btn">
-                        Add Another Student
-                    </a>
-
-                    <a href="/" class="secondary-btn">
-                        Back to Home
-                    </a>
-
-                </div>
-
+    {% set active_page = 'students' %}
+    {% include '_sidebar.html' %}
+    <main class="main-content">
+        <header class="top-header">
+            <div><p class="eyebrow">RECORD SAVED</p><h1>Performance Summary</h1><p>Student record for <strong>{{ name }}</strong> was added.</p></div>
+        </header>
+
+        <section class="panel result-page-panel">
+            <div class="result-banner {% if result == 'Pass' %}result-banner-pass{% else %}result-banner-fail{% endif %}">
+                <div><span>Final result</span><strong>{{ result }}</strong></div>
+                <p>{{ name }} · Grade {{ grade }}</p>
+            </div>
+            <div class="metrics-grid result-metrics">
+                <article class="metric-card"><span>Total marks</span><strong>{{ "%.1f"|format(total) }}<small> / 400</small></strong></article>
+                <article class="metric-card"><span>Average</span><strong>{{ "%.2f"|format(average) }}<small> / 100</small></strong></article>
+                <article class="metric-card metric-card-primary"><span>Percentage</span><strong>{{ "%.2f"|format(percentage) }}%</strong></article>
+                <article class="metric-card"><span>Grade</span><strong>{{ grade }}</strong></article>
             </div>
 
+            <section class="result-subjects">
+                <div class="section-heading"><div><h2>Subject Marks</h2><p>Individual subject results</p></div></div>
+                <div class="subject-marks-grid">
+                    {% for subject, mark in marks.items() %}<div><span>{{ subject }}</span><strong>{{ "%.1f"|format(mark) }}%</strong></div>{% endfor %}
+                </div>
+            </section>
+
+            <div class="result-highlights">
+                <div><span>Highest subject</span><strong>{{ highest_subject }}</strong></div>
+                <div><span>Lowest subject</span><strong>{{ lowest_subject }}</strong></div>
+            </div>
+            <div class="form-actions">
+                <a class="button button-primary" href="{{ url_for('student_details', student_id=student_id) }}">View Student Profile</a>
+                <a class="button button-secondary" href="{{ url_for('add_student') }}">Add Another Student</a>
+                <a class="button button-secondary" href="{{ url_for('students') }}">Student Directory</a>
+            </div>
         </section>
-
     </main>
-
 </body>
-
 </html>
-```

@@ -1,0 +1,14 @@
+<aside class="sidebar">
+    <a class="logo" href="{{ url_for('home') }}">
+        <span class="logo-mark">SA</span>
+        <span class="logo-copy"><strong>Student Analyzer</strong><small>Academic insights</small></span>
+    </a>
+    <nav aria-label="Main navigation">
+        <a href="{{ url_for('home') }}" {% if active_page == 'dashboard' %}class="active" aria-current="page"{% endif %}><span class="nav-icon">▦</span>Dashboard</a>
+        <a href="{{ url_for('students') }}" {% if active_page == 'students' %}class="active" aria-current="page"{% endif %}><span class="nav-icon">▤</span>Students</a>
+        <a href="{{ url_for('add_student') }}" {% if active_page == 'add_student' %}class="active" aria-current="page"{% endif %}><span class="nav-icon">＋</span>Add Student</a>
+        <a href="{{ url_for('analytics') }}" {% if active_page == 'analytics' %}class="active" aria-current="page"{% endif %}><span class="nav-icon">◷</span>Analytics</a>
+        <a href="{{ url_for('prediction') }}" {% if active_page == 'prediction' %}class="active" aria-current="page"{% endif %}><span class="nav-icon">⌁</span>ML Prediction</a>
+    </nav>
+    <div class="sidebar-footer">Student Performance Analyzer</div>
+</aside>

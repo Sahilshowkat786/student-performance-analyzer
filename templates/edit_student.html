@@ -1,249 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Edit Student</title>
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
-
+    <title>Edit {{ student.name }} - Student Performance Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
+    {% set active_page = 'students' %}
+    {% include '_sidebar.html' %}
+    <main class="main-content">
+        <header class="top-header">
+            <div><p class="eyebrow">STUDENT RECORDS</p><h1>Edit Student</h1><p>Update the record for {{ student.name }}.</p></div>
+        </header>
 
-    <nav class="topbar">
-
-        <h2>Student Performance Analyzer</h2>
-
-        <div>
-
-            <a href="{{ url_for('home') }}">
-                Dashboard
-            </a>
-
-            <a href="{{ url_for('students') }}">
-                Students
-            </a>
-
-            <a href="{{ url_for('analytics') }}">
-                Analytics
-            </a>
-
-        </div>
-
-    </nav>
-
-
-    <section class="result-section">
-
-        <div class="result-container">
-
-            <h1>Edit Student</h1>
-
-            <p class="result-description">
-                Update student information and performance.
-            </p>
-
-
-            <form method="POST">
-
-
-                <!-- Personal Information -->
-
-                <h2>Personal Information</h2>
-
-                <div class="form-group">
-
-                    <label>Name</label>
-
-                    <input type="text"
-                           name="name"
-                           value="{{ student.name }}"
-                           required>
-
+        <section class="form-section">
+            <div class="form-container">
+                {% if errors %}
+                <div class="form-alert" role="alert" aria-live="assertive">
+                    <strong>Please correct the following:</strong>
+                    <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
                 </div>
-
-
-                <div class="form-group">
-
-                    <label>Roll Number</label>
-
-                    <input type="text"
-                           name="roll"
-                           value="{{ student.roll }}"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>Email</label>
-
-                    <input type="email"
-                           name="email"
-                           value="{{ student.email }}"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>Age</label>
-
-                    <input type="number"
-                           name="age"
-                           value="{{ student.age }}"
-                           required>
-
-                </div>
-
-
-                <!-- Academic Information -->
-
-                <h2>Academic Information</h2>
-
-                <div class="form-group">
-
-                    <label>Attendance (%)</label>
-
-                    <input type="number"
-                           name="attendance"
-                           step="0.1"
-                           value="{{ student.attendance }}"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>Study Hours</label>
-
-                    <input type="number"
-                           name="study_hours"
-                           step="0.1"
-                           value="{{ student.study_hours }}"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>Assignment (%)</label>
-
-                    <input type="number"
-                           name="assignment"
-                           step="0.1"
-                           value="{{ student.assignment }}"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>Previous Marks (%)</label>
-
-                    <input type="number"
-                           name="previous_marks"
-                           step="0.1"
-                           value="{{ student.previous_marks }}"
-                           required>
-
-                </div>
-
-
-                <!-- Subject Marks -->
-
-                <h2>Subject Marks</h2>
-
-                <div class="form-group">
-
-                    <label>Python</label>
-
-                    <input type="number"
-                           name="python"
-                           step="0.1"
-                           value="{{ student.python }}"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>DSA</label>
-
-                    <input type="number"
-                           name="dsa"
-                           step="0.1"
-                           value="{{ student.dsa }}"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>DBMS</label>
-
-                    <input type="number"
-                           name="dbms"
-                           step="0.1"
-                           value="{{ student.dbms }}"
-                           required>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label>Web Development</label>
-
-                    <input type="number"
-                           name="web"
-                           step="0.1"
-                           value="{{ student.web }}"
-                           required>
-
-                </div>
-
-
-                <!-- Buttons -->
-
-                <div class="result-actions">
-
-                    <button type="submit"
-                            class="submit-btn">
-
-                        Update Student
-
-                    </button>
-
-
-                    <a href="{{ url_for('student_details', student_id=student.id) }}"
-                       class="secondary-btn">
-
-                        Cancel
-
-                    </a>
-
-                </div>
-
-
-            </form>
-
-        </div>
-
-    </section>
-
+                {% endif %}
+
+                <form method="post" action="{{ url_for('edit_student', student_id=student.id) }}" novalidate>
+                    <section class="form-block">
+                        <h2>Student Information</h2>
+                        <p class="form-block-description">Basic details used to identify the student.</p>
+                        <div class="form-grid">
+                            <div class="form-group"><label for="name">Student name</label><input id="name" name="name" type="text" value="{{ form_values.get('name', student.name) }}" required></div>
+                            <div class="form-group"><label for="roll">Roll number</label><input id="roll" name="roll" type="text" value="{{ form_values.get('roll', student.roll) }}" required></div>
+                            <div class="form-group"><label for="email">Email address</label><input id="email" name="email" type="email" value="{{ form_values.get('email', student.email) }}" required></div>
+                            <div class="form-group"><label for="age">Age</label><input id="age" name="age" type="number" min="10" max="100" step="1" value="{{ form_values.get('age', student.age) }}" required></div>
+                        </div>
+                    </section>
+
+                    <section class="form-block">
+                        <h2>Academic Information</h2>
+                        <p class="form-block-description">Attendance, study habits, assignment, and previous marks.</p>
+                        <div class="form-grid">
+                            <div class="form-group"><label for="attendance">Attendance (%)</label><input id="attendance" name="attendance" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('attendance', student.attendance) }}" required></div>
+                            <div class="form-group"><label for="study_hours">Study hours per day</label><input id="study_hours" name="study_hours" type="number" min="0" max="24" step="0.1" value="{{ form_values.get('study_hours', student.study_hours) }}" required></div>
+                            <div class="form-group"><label for="assignment">Assignment score (%)</label><input id="assignment" name="assignment" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('assignment', student.assignment) }}" required></div>
+                            <div class="form-group"><label for="previous_marks">Previous marks (%)</label><input id="previous_marks" name="previous_marks" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('previous_marks', student.previous_marks) }}" required></div>
+                        </div>
+                    </section>
+
+                    <section class="form-block">
+                        <h2>Subject Marks</h2>
+                        <p class="form-block-description">Marks for each subject, from 0 to 100.</p>
+                        <div class="form-grid">
+                            <div class="form-group"><label for="python">Python</label><input id="python" name="python" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('python', student.python) }}" required></div>
+                            <div class="form-group"><label for="dsa">Data Structures &amp; Algorithms</label><input id="dsa" name="dsa" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('dsa', student.dsa) }}" required></div>
+                            <div class="form-group"><label for="dbms">Database Management Systems</label><input id="dbms" name="dbms" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('dbms', student.dbms) }}" required></div>
+                            <div class="form-group"><label for="web">Web Development</label><input id="web" name="web" type="number" min="0" max="100" step="0.1" value="{{ form_values.get('web', student.web) }}" required></div>
+                        </div>
+                    </section>
+
+                    <div class="form-actions">
+                        <button class="button button-primary" type="submit">Save Changes</button>
+                        <a class="button button-secondary" href="{{ url_for('student_details', student_id=student.id) }}">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
 </body>
-
 </html>
