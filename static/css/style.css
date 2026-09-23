@@ -2040,3 +2040,65 @@ textarea:focus {
         flex: 1 1 auto;
     }
 }
+
+/* Shared page frame and footer */
+.app-body {
+    display: flex;
+    min-height: 100vh;
+}
+
+.page-shell {
+    display: flex;
+    min-width: 0;
+    min-height: 100vh;
+    flex: 1;
+    flex-direction: column;
+    margin-left: 260px;
+}
+
+.page-shell > .main-content {
+    width: auto;
+    min-height: 0;
+    flex: 1;
+    margin-left: 0;
+}
+
+.app-footer {
+    padding: 17px clamp(22px, 3.4vw, 52px);
+    border-top: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+}
+
+.app-footer p {
+    margin: 0;
+}
+
+@media (max-width: 1100px) {
+    .page-shell {
+        margin-left: 230px;
+    }
+}
+
+@media (max-width: 760px) {
+    .app-body {
+        flex-direction: column;
+    }
+
+    .page-shell {
+        width: 100%;
+        min-height: 0;
+        margin-left: 0;
+    }
+
+    .page-shell > .main-content {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .app-footer {
+        padding: 15px 12px;
+    }
+}

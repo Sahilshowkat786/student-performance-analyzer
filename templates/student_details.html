@@ -1,17 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ student.name }} - Student Performance Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    {% set active_page = 'students' %}
-    {% include '_sidebar.html' %}
-    <main class="main-content">
-        <header class="top-header">
+{% extends "base.html" %}
+
+{% block title %}{{ student.name }} - Student Performance Analyzer{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block sidebar %}
+{% set active_page = 'students' %}
+{% include '_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<header class="top-header">
             <div><p class="eyebrow">STUDENT PROFILE</p><h1>{{ student.name }}</h1><p>Roll {{ student.roll }} · {{ student.email }}</p></div>
             <a class="button button-primary" href="{{ url_for('edit_student', student_id=student.id) }}">Edit student</a>
         </header>
@@ -61,7 +62,8 @@
             <a class="button button-primary" href="{{ url_for('edit_student', student_id=student.id) }}">Edit Student</a>
             <form action="{{ url_for('delete_student', student_id=student.id) }}" method="post" onsubmit="return confirm('Delete this student record?');"><button class="button button-danger" type="submit">Delete Student</button></form>
         </section>
-    </main>
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-</body>
-</html>
+{% endblock %}
+
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

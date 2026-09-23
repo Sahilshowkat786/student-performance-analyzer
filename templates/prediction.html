@@ -1,17 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ML Prediction - Student Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    {% set active_page = 'prediction' %}
-    {% include '_sidebar.html' %}
+{% extends "base.html" %}
 
-    <main class="main-content">
-        <header class="top-header">
+{% block title %}ML Prediction - Student Analyzer{% endblock %}
+
+{% block head_extra %}
+{% endblock %}
+
+{% block sidebar %}
+{% set active_page = 'prediction' %}
+{% include '_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<header class="top-header">
             <div>
                 <h1>ML Performance Prediction</h1>
                 <p>Explore an estimated final percentage from a student's current indicators.</p>
@@ -98,6 +98,7 @@
             </div>
         </section>
         {% endif %}
-    </main>
-</body>
-</html>
+{% endblock %}
+
+{% block page_scripts %}
+{% endblock %}

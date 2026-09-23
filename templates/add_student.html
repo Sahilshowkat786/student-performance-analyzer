@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Student - Student Performance Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    {% set active_page = 'add_student' %}
-    {% include '_sidebar.html' %}
-    <main class="main-content">
-        <header class="top-header">
+{% extends "base.html" %}
+
+{% block title %}Add Student - Student Performance Analyzer{% endblock %}
+
+{% block head_extra %}
+{% endblock %}
+
+{% block sidebar %}
+{% set active_page = 'add_student' %}
+{% include '_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<header class="top-header">
             <div><p class="eyebrow">STUDENT RECORDS</p><h1>Add Student</h1><p>Enter student information and assessment marks.</p></div>
         </header>
 
@@ -64,6 +65,7 @@
                 </form>
             </div>
         </section>
-    </main>
-</body>
-</html>
+{% endblock %}
+
+{% block page_scripts %}
+{% endblock %}

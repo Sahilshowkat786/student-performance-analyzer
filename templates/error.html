@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ error_title }} - Student Performance Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    {% set active_page = '' %}
-    {% include '_sidebar.html' %}
-    <main class="main-content">
-        <section class="panel error-panel" role="status">
+{% extends "base.html" %}
+
+{% block title %}{{ error_title }} - Student Performance Analyzer{% endblock %}
+
+{% block head_extra %}
+{% endblock %}
+
+{% block sidebar %}
+{% set active_page = '' %}
+{% include '_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="panel error-panel" role="status">
             <p class="eyebrow">ERROR {{ error_code }}</p>
             <h1>{{ error_title }}</h1>
             <p>{{ error_message }}</p>
@@ -19,6 +20,7 @@
                 <a class="button button-secondary" href="{{ url_for('students') }}">Student Directory</a>
             </div>
         </section>
-    </main>
-</body>
-</html>
+{% endblock %}
+
+{% block page_scripts %}
+{% endblock %}

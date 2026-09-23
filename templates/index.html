@@ -1,40 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
+{% block title %}Student Performance Analyzer{% endblock %}
 
-    <meta charset="UTF-8">
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+{% block sidebar %}
+{% set active_page = 'dashboard' %}
+{% include '_sidebar.html' %}
+{% endblock %}
 
-    <title>Student Performance Analyzer</title>
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-</head>
-
-
-<body>
-
-
-    <!-- ================= SIDEBAR ================= -->
-
-    {% set active_page = 'dashboard' %}
-    {% include '_sidebar.html' %}
-
-
-
-    <!-- ================= MAIN CONTENT ================= -->
-
-    <main class="main-content">
-
-
-        <!-- HEADER -->
+{% block content %}
+<!-- HEADER -->
 
         <header class="top-header">
 
@@ -527,20 +505,8 @@
              data-pass-fail-labels='{{ pass_fail_labels | tojson }}'
              data-pass-fail-data='{{ pass_fail_data | tojson }}'>
         </div>
+{% endblock %}
 
-
-    </main>
-
-
-
-    <!-- ================= DASHBOARD JS ================= -->
-
-    <script src="{{ url_for(
-        'static',
-        filename='js/dashboard.js'
-    ) }}"></script>
-
-
-</body>
-
-</html>
+{% block page_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

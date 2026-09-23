@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performance Result - Student Performance Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    {% set active_page = 'students' %}
-    {% include '_sidebar.html' %}
-    <main class="main-content">
-        <header class="top-header">
+{% extends "base.html" %}
+
+{% block title %}Performance Result - Student Performance Analyzer{% endblock %}
+
+{% block head_extra %}
+{% endblock %}
+
+{% block sidebar %}
+{% set active_page = 'students' %}
+{% include '_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<header class="top-header">
             <div><p class="eyebrow">RECORD SAVED</p><h1>Performance Summary</h1><p>Student record for <strong>{{ name }}</strong> was added.</p></div>
         </header>
 
@@ -43,6 +44,7 @@
                 <a class="button button-secondary" href="{{ url_for('students') }}">Student Directory</a>
             </div>
         </section>
-    </main>
-</body>
-</html>
+{% endblock %}
+
+{% block page_scripts %}
+{% endblock %}

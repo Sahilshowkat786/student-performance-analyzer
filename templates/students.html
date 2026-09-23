@@ -1,17 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students - Student Performance Analyzer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-    {% set active_page = 'students' %}
-    {% include '_sidebar.html' %}
+{% extends "base.html" %}
 
-    <main class="main-content">
-        <header class="top-header">
+{% block title %}Students - Student Performance Analyzer{% endblock %}
+
+{% block head_extra %}
+{% endblock %}
+
+{% block sidebar %}
+{% set active_page = 'students' %}
+{% include '_sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<header class="top-header">
             <div>
                 <p class="eyebrow">STUDENT DIRECTORY</p>
                 <h1>Students</h1>
@@ -103,6 +103,7 @@
                 </div>
             {% endif %}
         </section>
-    </main>
-</body>
-</html>
+{% endblock %}
+
+{% block page_scripts %}
+{% endblock %}

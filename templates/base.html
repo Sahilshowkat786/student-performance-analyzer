@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Performance Analyzer{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="app-body">
+    {% block sidebar %}{% endblock %}
+
+    <div class="page-shell">
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="app-footer">
+            <p>© 2026 Sahil Showkat. All rights reserved.</p>
+        </footer>
+    </div>
+
+    {% block page_scripts %}{% endblock %}
+</body>
+</html>
