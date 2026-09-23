@@ -269,7 +269,91 @@ document.addEventListener("DOMContentLoaded", function () {
                                     : "";
                             },
                             label: function (context) {
-                                return `Attendance: ${context.raw.x}% · Performance: ${context.raw.y}%`;
+                                return `Attendance: ${context.raw.x}% | Performance: ${context.raw.y}%`;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
+
+    // =====================================================
+    // STUDY HOURS VS PERFORMANCE
+    // =====================================================
+
+    const studyHoursPerformanceElement =
+        document.getElementById("studyHoursPerformanceData");
+
+    const studyHoursPerformanceCanvas =
+        document.getElementById("studyHoursPerformanceChart");
+
+    if (studyHoursPerformanceElement && studyHoursPerformanceCanvas) {
+
+        const studyHoursPerformanceData = JSON.parse(
+            studyHoursPerformanceElement.dataset.points
+        );
+
+        new Chart(studyHoursPerformanceCanvas, {
+
+            type: "scatter",
+
+            data: {
+
+                datasets: [
+                    {
+                        label: "Students",
+                        data: studyHoursPerformanceData,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    x: {
+                        type: "linear",
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Study Hours"
+                        }
+                    },
+
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Performance / Percentage (%)"
+                        },
+                        min: 0,
+                        max: 100
+                    }
+
+                },
+
+                plugins: {
+
+                    tooltip: {
+                        callbacks: {
+                            title: function (items) {
+                                return items.length
+                                    ? items[0].raw.name
+                                    : "";
+                            },
+                            label: function (context) {
+                                return `Study Hours: ${context.raw.x} | Performance: ${context.raw.y}%`;
                             }
                         }
                     }

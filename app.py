@@ -187,7 +187,7 @@ def analytics():
     connection = get_db_connection()
 
     students = connection.execute("""
-        SELECT name, attendance, percentage
+        SELECT name, attendance, study_hours, percentage
         FROM students
         ORDER BY id DESC
     """).fetchall()
@@ -203,9 +203,19 @@ def analytics():
         for student in students
     ]
 
+    study_hours_performance_data = [
+        {
+            "x": round(student["study_hours"], 2),
+            "y": round(student["percentage"], 2),
+            "name": student["name"]
+        }
+        for student in students
+    ]
+
     return render_template(
         "analytics.html",
-        attendance_performance_data=attendance_performance_data
+        attendance_performance_data=attendance_performance_data,
+        study_hours_performance_data=study_hours_performance_data
     )
 
 # =========================================================
