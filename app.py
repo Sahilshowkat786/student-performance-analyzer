@@ -192,7 +192,57 @@ def analytics():
         ORDER BY id DESC
     """).fetchall()
 
+    summary = connection.execute("""
+        SELECT
+            COUNT(*) AS total_students,
+            AVG(attendance) AS average_attendance,
+            AVG(study_hours) AS average_study_hours,
+            AVG(assignment) AS average_assignment,
+            AVG(previous_marks) AS average_previous_marks,
+            AVG(percentage) AS average_percentage,
+            AVG(python) AS python_average,
+            AVG(dsa) AS dsa_average,
+            AVG(dbms) AS dbms_average,
+            AVG(web) AS web_average
+        FROM students
+    """).fetchone()
+
+    grade_counts = connection.execute("""
+        SELECT grade, COUNT(*) AS count
+        FROM students
+        GROUP BY grade
+        ORDER BY
+            CASE grade
+                WHEN 'A+' THEN 1
+                WHEN 'A' THEN 2
+                WHEN 'B' THEN 3
+                WHEN 'C' THEN 4
+                WHEN 'D' THEN 5
+                WHEN 'F' THEN 6
+                ELSE 7
+            END
+    """).fetchall()
+
+    pass_fail_counts = connection.execute("""
+        SELECT result, COUNT(*) AS count
+        FROM students
+        GROUP BY result
+        ORDER BY CASE result WHEN 'Pass' THEN 1 WHEN 'Fail' THEN 2 ELSE 3 END
+    """).fetchall()
+
     connection.close()
+
+    subject_average_data = [
+        round(summary["python_average"] or 0, 2),
+        round(summary["dsa_average"] or 0, 2),
+        round(summary["dbms_average"] or 0, 2),
+        round(summary["web_average"] or 0, 2)
+    ]
+
+    grade_labels = [row["grade"] for row in grade_counts]
+    grade_data = [row["count"] for row in grade_counts]
+    pass_fail_labels = [row["result"] for row in pass_fail_counts]
+    pass_fail_data = [row["count"] for row in pass_fail_counts]
 
     attendance_performance_data = [
         {
@@ -232,6 +282,17 @@ def analytics():
 
     return render_template(
         "analytics.html",
+        total_students=summary["total_students"],
+        average_attendance=round(summary["average_attendance"] or 0, 2),
+        average_study_hours=round(summary["average_study_hours"] or 0, 2),
+        average_assignment=round(summary["average_assignment"] or 0, 2),
+        average_previous_marks=round(summary["average_previous_marks"] or 0, 2),
+        average_percentage=round(summary["average_percentage"] or 0, 2),
+        subject_average_data=subject_average_data,
+        grade_labels=grade_labels,
+        grade_data=grade_data,
+        pass_fail_labels=pass_fail_labels,
+        pass_fail_data=pass_fail_data,
         attendance_performance_data=attendance_performance_data,
         study_hours_performance_data=study_hours_performance_data,
         assignment_performance_data=assignment_performance_data,

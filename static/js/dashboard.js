@@ -199,6 +199,106 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // =====================================================
+    // OVERALL ANALYTICS DASHBOARD
+    // =====================================================
+
+    const overallAnalyticsElement =
+        document.getElementById("overallAnalyticsData");
+
+    if (overallAnalyticsElement) {
+
+        const subjectAverages = JSON.parse(
+            overallAnalyticsElement.dataset.subjectAverages
+        );
+        const classGradeLabels = JSON.parse(
+            overallAnalyticsElement.dataset.gradeLabels
+        );
+        const classGradeData = JSON.parse(
+            overallAnalyticsElement.dataset.gradeData
+        );
+        const classPassFailLabels = JSON.parse(
+            overallAnalyticsElement.dataset.passFailLabels
+        );
+        const classPassFailData = JSON.parse(
+            overallAnalyticsElement.dataset.passFailData
+        );
+
+        const classSubjectCanvas = document.getElementById("classSubjectChart");
+        if (classSubjectCanvas) {
+            new Chart(classSubjectCanvas, {
+                type: "bar",
+                data: {
+                    labels: ["Python", "DSA", "DBMS", "Web Development"],
+                    datasets: [{
+                        label: "Average Marks (%)",
+                        data: subjectAverages,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: "Average Marks (%)" }
+                        }
+                    }
+                }
+            });
+        }
+
+        const classGradeCanvas = document.getElementById("classGradeChart");
+        if (classGradeCanvas) {
+            new Chart(classGradeCanvas, {
+                type: "bar",
+                data: {
+                    labels: classGradeLabels,
+                    datasets: [{
+                        label: "Students",
+                        data: classGradeData,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 },
+                            title: { display: true, text: "Number of Students" }
+                        }
+                    }
+                }
+            });
+        }
+
+        const classPassFailCanvas = document.getElementById("classPassFailChart");
+        if (classPassFailCanvas) {
+            new Chart(classPassFailCanvas, {
+                type: "doughnut",
+                data: {
+                    labels: classPassFailLabels,
+                    datasets: [{
+                        label: "Students",
+                        data: classPassFailData,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+    }
+
+
+    // =====================================================
     // ATTENDANCE VS PERFORMANCE
     // =====================================================
 

@@ -31,114 +31,165 @@
     <main class="main-content">
         <header class="top-header">
             <div>
-                <h1>Student Analytics</h1>
-                <p>Explore how attendance, study hours, assignment scores, and previous marks relate to performance.</p>
+                <h1>Overall Student Analytics</h1>
+                <p>Class-wide performance summary, outcomes, and student relationships.</p>
             </div>
         </header>
 
-        <section class="panel analytics-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Attendance vs Performance</h2>
-                    <p>Each point represents one student. Hover over a point to see their name and values.</p>
-                </div>
+        <section class="analytics-section">
+            <div class="analytics-section-header">
+                <h2>Class Overview</h2>
+                <p>Summary of all {{ total_students }} student records.</p>
             </div>
 
-            {% if attendance_performance_data %}
-                <div class="analytics-chart">
-                    <canvas id="attendancePerformanceChart"
-                            aria-label="Scatter chart of student attendance and performance"
-                            role="img"></canvas>
+            <div class="analytics-summary-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">#</div>
+                    <div><h3>Total Students</h3><p>{{ total_students }}</p></div>
                 </div>
-            {% else %}
-                <div class="empty-state">
-                    <h3>No Student Data Available</h3>
-                    <p>Add students with attendance and marks to view this analysis.</p>
-                    <a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a>
+                <div class="stat-card">
+                    <div class="stat-icon">%</div>
+                    <div><h3>Average Attendance</h3><p>{{ "%.2f"|format(average_attendance) }}%</p></div>
                 </div>
-            {% endif %}
-        </section>
-
-        <div id="attendancePerformanceData"
-             data-points='{{ attendance_performance_data | tojson }}'></div>
-
-        <section class="panel analytics-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Study Hours vs Performance</h2>
-                    <p>Each point represents one student. Hover over a point to see their name and values.</p>
+                <div class="stat-card">
+                    <div class="stat-icon">H</div>
+                    <div><h3>Average Study Hours</h3><p>{{ "%.2f"|format(average_study_hours) }}</p></div>
                 </div>
-            </div>
-
-            {% if study_hours_performance_data %}
-                <div class="analytics-chart">
-                    <canvas id="studyHoursPerformanceChart"
-                            aria-label="Scatter chart of student study hours and performance"
-                            role="img"></canvas>
+                <div class="stat-card">
+                    <div class="stat-icon">A</div>
+                    <div><h3>Average Assignment Score</h3><p>{{ "%.2f"|format(average_assignment) }}%</p></div>
                 </div>
-            {% else %}
-                <div class="empty-state">
-                    <h3>No Student Data Available</h3>
-                    <p>Add students with study hours and marks to view this analysis.</p>
-                    <a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a>
+                <div class="stat-card">
+                    <div class="stat-icon">P</div>
+                    <div><h3>Average Previous Marks</h3><p>{{ "%.2f"|format(average_previous_marks) }}%</p></div>
                 </div>
-            {% endif %}
-        </section>
-
-        <div id="studyHoursPerformanceData"
-             data-points='{{ study_hours_performance_data | tojson }}'></div>
-
-        <section class="panel analytics-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Assignment Score vs Performance</h2>
-                    <p>Each point represents one student. Hover over a point to see their name and values.</p>
+                <div class="stat-card">
+                    <div class="stat-icon">S</div>
+                    <div><h3>Average Current Percentage</h3><p>{{ "%.2f"|format(average_percentage) }}%</p></div>
                 </div>
             </div>
-
-            {% if assignment_performance_data %}
-                <div class="analytics-chart">
-                    <canvas id="assignmentPerformanceChart"
-                            aria-label="Scatter chart of student assignment scores and performance"
-                            role="img"></canvas>
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <h3>No Student Data Available</h3>
-                    <p>Add students with assignment scores and marks to view this analysis.</p>
-                    <a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a>
-                </div>
-            {% endif %}
         </section>
 
-        <div id="assignmentPerformanceData"
-             data-points='{{ assignment_performance_data | tojson }}'></div>
-
-        <section class="panel analytics-panel">
-            <div class="panel-header">
-                <div>
-                    <h2>Previous Marks vs Current Performance</h2>
-                    <p>Each point represents one student. Hover over a point to see their name and values.</p>
-                </div>
+        <section class="analytics-section">
+            <div class="analytics-section-header">
+                <h2>Class Performance and Outcomes</h2>
+                <p>Compare subject averages and review grade and pass/fail distributions.</p>
             </div>
 
-            {% if previous_marks_performance_data %}
-                <div class="analytics-chart">
-                    <canvas id="previousMarksPerformanceChart"
-                            aria-label="Scatter chart of student previous marks and current performance"
-                            role="img"></canvas>
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <h3>No Student Data Available</h3>
-                    <p>Add students with previous marks and current results to view this analysis.</p>
-                    <a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a>
-                </div>
-            {% endif %}
+            <div class="analytics-chart-grid">
+                <section class="panel analytics-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Subject Performance</h2>
+                            <p>Average marks across the class</p>
+                        </div>
+                    </div>
+                    {% if total_students %}
+                        <div class="analytics-chart analytics-chart-compact">
+                            <canvas id="classSubjectChart"
+                                    aria-label="Average class marks by subject"
+                                    role="img"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="empty-state"><h3>No Student Data Available</h3><p>Add students to compare subject performance.</p></div>
+                    {% endif %}
+                </section>
+
+                <section class="panel analytics-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Grade Distribution</h2>
+                            <p>Number of students in each grade</p>
+                        </div>
+                    </div>
+                    {% if total_students %}
+                        <div class="analytics-chart analytics-chart-compact">
+                            <canvas id="classGradeChart"
+                                    aria-label="Student counts by grade"
+                                    role="img"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="empty-state"><h3>No Student Data Available</h3><p>Add students to see grade distribution.</p></div>
+                    {% endif %}
+                </section>
+
+                <section class="panel analytics-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Pass / Fail Distribution</h2>
+                            <p>Number of students by result</p>
+                        </div>
+                    </div>
+                    {% if total_students %}
+                        <div class="analytics-chart analytics-chart-compact">
+                            <canvas id="classPassFailChart"
+                                    aria-label="Student counts by pass or fail result"
+                                    role="img"></canvas>
+                        </div>
+                    {% else %}
+                        <div class="empty-state"><h3>No Student Data Available</h3><p>Add students to see pass/fail distribution.</p></div>
+                    {% endif %}
+                </section>
+            </div>
         </section>
 
-        <div id="previousMarksPerformanceData"
-             data-points='{{ previous_marks_performance_data | tojson }}'></div>
+        <section class="analytics-section">
+            <div class="analytics-section-header">
+                <h2>Student Relationship Analytics</h2>
+                <p>Compare individual student indicators with their current performance. Hover over a point to see the student and values.</p>
+            </div>
+
+            <div class="analytics-chart-grid">
+                <section class="panel analytics-panel">
+                    <div class="panel-header"><div><h2>Attendance vs Performance</h2><p>Attendance (%) and current percentage</p></div></div>
+                    {% if attendance_performance_data %}
+                        <div class="analytics-chart analytics-chart-compact"><canvas id="attendancePerformanceChart" aria-label="Attendance versus performance scatter chart" role="img"></canvas></div>
+                    {% else %}
+                        <div class="empty-state"><h3>No Student Data Available</h3><p>Add students to view this relationship.</p><a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a></div>
+                    {% endif %}
+                </section>
+
+                <section class="panel analytics-panel">
+                    <div class="panel-header"><div><h2>Study Hours vs Performance</h2><p>Study hours and current percentage</p></div></div>
+                    {% if study_hours_performance_data %}
+                        <div class="analytics-chart analytics-chart-compact"><canvas id="studyHoursPerformanceChart" aria-label="Study hours versus performance scatter chart" role="img"></canvas></div>
+                    {% else %}
+                        <div class="empty-state"><h3>No Student Data Available</h3><p>Add students to view this relationship.</p><a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a></div>
+                    {% endif %}
+                </section>
+
+                <section class="panel analytics-panel">
+                    <div class="panel-header"><div><h2>Assignment Score vs Performance</h2><p>Assignment score (%) and current percentage</p></div></div>
+                    {% if assignment_performance_data %}
+                        <div class="analytics-chart analytics-chart-compact"><canvas id="assignmentPerformanceChart" aria-label="Assignment score versus performance scatter chart" role="img"></canvas></div>
+                    {% else %}
+                        <div class="empty-state"><h3>No Student Data Available</h3><p>Add students to view this relationship.</p><a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a></div>
+                    {% endif %}
+                </section>
+
+                <section class="panel analytics-panel">
+                    <div class="panel-header"><div><h2>Previous Marks vs Current Performance</h2><p>Previous marks (%) and current percentage</p></div></div>
+                    {% if previous_marks_performance_data %}
+                        <div class="analytics-chart analytics-chart-compact"><canvas id="previousMarksPerformanceChart" aria-label="Previous marks versus current performance scatter chart" role="img"></canvas></div>
+                    {% else %}
+                        <div class="empty-state"><h3>No Student Data Available</h3><p>Add students to view this relationship.</p><a href="{{ url_for('add_student') }}" class="primary-btn">Add Student</a></div>
+                    {% endif %}
+                </section>
+            </div>
+        </section>
+
+        <div id="overallAnalyticsData"
+             data-subject-averages='{{ subject_average_data | tojson }}'
+             data-grade-labels='{{ grade_labels | tojson }}'
+             data-grade-data='{{ grade_data | tojson }}'
+             data-pass-fail-labels='{{ pass_fail_labels | tojson }}'
+             data-pass-fail-data='{{ pass_fail_data | tojson }}'
+             hidden></div>
+
+        <div id="attendancePerformanceData" data-points='{{ attendance_performance_data | tojson }}' hidden></div>
+        <div id="studyHoursPerformanceData" data-points='{{ study_hours_performance_data | tojson }}' hidden></div>
+        <div id="assignmentPerformanceData" data-points='{{ assignment_performance_data | tojson }}' hidden></div>
+        <div id="previousMarksPerformanceData" data-points='{{ previous_marks_performance_data | tojson }}' hidden></div>
     </main>
 
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
