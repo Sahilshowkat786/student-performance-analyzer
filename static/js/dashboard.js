@@ -451,4 +451,89 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
+    // =====================================================
+    // PREVIOUS MARKS VS CURRENT PERFORMANCE
+    // =====================================================
+
+    const previousMarksPerformanceElement =
+        document.getElementById("previousMarksPerformanceData");
+
+    const previousMarksPerformanceCanvas =
+        document.getElementById("previousMarksPerformanceChart");
+
+    if (previousMarksPerformanceElement && previousMarksPerformanceCanvas) {
+
+        const previousMarksPerformanceData = JSON.parse(
+            previousMarksPerformanceElement.dataset.points
+        );
+
+        new Chart(previousMarksPerformanceCanvas, {
+
+            type: "scatter",
+
+            data: {
+
+                datasets: [
+                    {
+                        label: "Students",
+                        data: previousMarksPerformanceData,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }
+                ]
+
+            },
+
+            options: {
+
+                responsive: true,
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    x: {
+                        type: "linear",
+                        title: {
+                            display: true,
+                            text: "Previous Marks (%)"
+                        },
+                        min: 0,
+                        max: 100
+                    },
+
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Current Performance / Percentage (%)"
+                        },
+                        min: 0,
+                        max: 100
+                    }
+
+                },
+
+                plugins: {
+
+                    tooltip: {
+                        callbacks: {
+                            title: function (items) {
+                                return items.length
+                                    ? items[0].raw.name
+                                    : "";
+                            },
+                            label: function (context) {
+                                return `Previous Marks: ${context.raw.x}% | Current Performance: ${context.raw.y}%`;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+
+        });
+
+    }
+
 });
