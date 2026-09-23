@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import math
+import os
 import re
 import sqlite3
 
@@ -8,7 +9,8 @@ from ml_model import FEATURE_COLUMNS, MINIMUM_TRAINING_SAMPLES, train_linear_reg
 
 app = Flask(__name__)
 
-DATABASE = "students.db"
+APP_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+DATABASE = os.path.join(APP_DIRECTORY, "students.db")
 
 
 # =========================================================
@@ -112,37 +114,47 @@ def internal_server_error(_error):
 # =========================================================
 
 def create_database():
+    database_directory = os.path.dirname(DATABASE)
+    os.makedirs(database_directory, exist_ok=True)
+
     connection = get_db_connection()
 
-    connection.execute("""
-        CREATE TABLE IF NOT EXISTS students (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+    try:
+        connection.execute("""
+            CREATE TABLE IF NOT EXISTS students (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-            name TEXT NOT NULL,
-            roll TEXT NOT NULL,
-            email TEXT NOT NULL,
-            age INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                roll TEXT NOT NULL,
+                email TEXT NOT NULL,
+                age INTEGER NOT NULL,
 
-            attendance REAL NOT NULL,
-            study_hours REAL NOT NULL,
-            assignment REAL NOT NULL,
-            previous_marks REAL NOT NULL,
+                attendance REAL NOT NULL,
+                study_hours REAL NOT NULL,
+                assignment REAL NOT NULL,
+                previous_marks REAL NOT NULL,
 
-            python REAL NOT NULL,
-            dsa REAL NOT NULL,
-            dbms REAL NOT NULL,
-            web REAL NOT NULL,
+                python REAL NOT NULL,
+                dsa REAL NOT NULL,
+                dbms REAL NOT NULL,
+                web REAL NOT NULL,
 
-            total REAL NOT NULL,
-            average REAL NOT NULL,
-            percentage REAL NOT NULL,
-            grade TEXT NOT NULL,
-            result TEXT NOT NULL
-        )
-    """)
+                total REAL NOT NULL,
+                average REAL NOT NULL,
+                percentage REAL NOT NULL,
+                grade TEXT NOT NULL,
+                result TEXT NOT NULL
+            )
+        """)
 
-    connection.commit()
-    connection.close()
+        connection.commit()
+    finally:
+        connection.close()
+
+
+# Gunicorn imports this module instead of executing it as __main__.
+# Initialize the database during import so it is ready before requests arrive.
+create_database()
 
 
 # =========================================================
@@ -1037,9 +1049,6 @@ def add_student():
 # =========================================================
 
 if __name__ == "__main__":
-
-    create_database()
-
     app.run(
         debug=False
     )
